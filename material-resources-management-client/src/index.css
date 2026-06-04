@@ -1,0 +1,222 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/jetbrains-mono";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+    --font-heading: 'Geist Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-sans: 'Geist Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+
+    --color-sidebar-ring: var(--sidebar-ring);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar: var(--sidebar);
+    --color-chart-5: var(--chart-5);
+    --color-chart-4: var(--chart-4);
+    --color-chart-3: var(--chart-3);
+    --color-chart-2: var(--chart-2);
+    --color-chart-1: var(--chart-1);
+    --color-ring: var(--ring);
+    --color-input: var(--input);
+    --color-border: var(--border);
+    --color-destructive: var(--destructive);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-accent: var(--accent);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-muted: var(--muted);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-secondary: var(--secondary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary: var(--primary);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-popover: var(--popover);
+    --color-card-foreground: var(--card-foreground);
+    --color-card: var(--card);
+    --color-foreground: var(--foreground);
+    --color-background: var(--background);
+
+    --color-success: var(--success);
+    --color-success-foreground: var(--success-foreground);
+    --color-warning: var(--warning);
+    --color-warning-foreground: var(--warning-foreground);
+    --color-info: var(--info);
+    --color-info-foreground: var(--info-foreground);
+
+    --radius-sm: calc(var(--radius) * 0.6);
+    --radius-md: calc(var(--radius) * 0.8);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) * 1.4);
+    --radius-2xl: calc(var(--radius) * 1.8);
+    --radius-3xl: calc(var(--radius) * 2.2);
+    --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/*
+ * Light theme. Brand: warm teal (175°) with subtly shifted neutrals so the page
+ * does not read as flat grayscale. Status colors share the same lightness band
+ * so badges, cards and chart series sit at consistent visual weight.
+ */
+:root {
+    --background: oklch(0.992 0.003 180);
+    --foreground: oklch(0.16 0.018 230);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.18 0.018 230);
+    --popover: oklch(0.995 0.002 180);
+    --popover-foreground: oklch(0.18 0.018 230);
+
+    --primary: oklch(0.55 0.115 178);
+    --primary-foreground: oklch(0.99 0.01 180);
+
+    --secondary: oklch(0.965 0.007 200);
+    --secondary-foreground: oklch(0.22 0.018 230);
+    --muted: oklch(0.962 0.007 215);
+    --muted-foreground: oklch(0.48 0.015 235);
+    --accent: oklch(0.93 0.025 178);
+    --accent-foreground: oklch(0.24 0.045 200);
+
+    --destructive: oklch(0.6 0.225 27);
+    --destructive-foreground: oklch(0.99 0.01 180);
+
+    --success: oklch(0.66 0.155 152);
+    --success-foreground: oklch(0.13 0.045 152);
+    --warning: oklch(0.78 0.155 78);
+    --warning-foreground: oklch(0.2 0.05 78);
+    --info: oklch(0.66 0.13 248);
+    --info-foreground: oklch(0.15 0.06 248);
+
+    --border: oklch(0.9 0.008 220);
+    --input: oklch(0.94 0.006 220);
+    --ring: oklch(0.55 0.115 178);
+
+    --chart-1: oklch(0.55 0.115 178);
+    --chart-2: oklch(0.68 0.13 195);
+    --chart-3: oklch(0.62 0.13 248);
+    --chart-4: oklch(0.74 0.16 88);
+    --chart-5: oklch(0.6 0.21 25);
+
+    --radius: 0.75rem;
+
+    --sidebar: oklch(0.985 0.005 200);
+    --sidebar-foreground: oklch(0.22 0.02 230);
+    --sidebar-primary: oklch(0.55 0.115 178);
+    --sidebar-primary-foreground: oklch(0.99 0.01 180);
+    --sidebar-accent: oklch(0.94 0.018 195);
+    --sidebar-accent-foreground: oklch(0.22 0.025 200);
+    --sidebar-border: oklch(0.91 0.008 220);
+    --sidebar-ring: oklch(0.55 0.115 178);
+}
+
+/*
+ * Dark theme. Deep night-blue base, brighter primary so it pops against the
+ * background. Card/popover sit slightly above background — never pure black.
+ */
+.dark {
+    --background: oklch(0.142 0.024 250);
+    --foreground: oklch(0.97 0.008 230);
+    --card: oklch(0.18 0.025 248);
+    --card-foreground: oklch(0.97 0.008 230);
+    --popover: oklch(0.2 0.027 248);
+    --popover-foreground: oklch(0.97 0.008 230);
+
+    --primary: oklch(0.72 0.142 178);
+    --primary-foreground: oklch(0.14 0.04 200);
+
+    --secondary: oklch(0.245 0.022 248);
+    --secondary-foreground: oklch(0.96 0.008 230);
+    --muted: oklch(0.24 0.022 248);
+    --muted-foreground: oklch(0.7 0.018 230);
+    --accent: oklch(0.27 0.04 200);
+    --accent-foreground: oklch(0.96 0.018 195);
+
+    --destructive: oklch(0.7 0.205 25);
+    --destructive-foreground: oklch(0.99 0.01 180);
+
+    --success: oklch(0.74 0.155 152);
+    --success-foreground: oklch(0.12 0.04 152);
+    --warning: oklch(0.82 0.16 78);
+    --warning-foreground: oklch(0.16 0.04 78);
+    --info: oklch(0.74 0.135 248);
+    --info-foreground: oklch(0.13 0.05 248);
+
+    --border: oklch(1 0 0 / 9%);
+    --input: oklch(1 0 0 / 12%);
+    --ring: oklch(0.72 0.142 178);
+
+    --chart-1: oklch(0.78 0.14 178);
+    --chart-2: oklch(0.74 0.13 195);
+    --chart-3: oklch(0.72 0.14 248);
+    --chart-4: oklch(0.82 0.16 88);
+    --chart-5: oklch(0.7 0.2 25);
+
+    --sidebar: oklch(0.155 0.026 250);
+    --sidebar-foreground: oklch(0.95 0.008 230);
+    --sidebar-primary: oklch(0.72 0.142 178);
+    --sidebar-primary-foreground: oklch(0.14 0.04 200);
+    --sidebar-accent: oklch(0.25 0.04 200);
+    --sidebar-accent-foreground: oklch(0.96 0.018 195);
+    --sidebar-border: oklch(1 0 0 / 8%);
+    --sidebar-ring: oklch(0.72 0.142 178);
+}
+
+@layer base {
+    *,
+    ::before,
+    ::after {
+        @apply border-border outline-ring/50;
+    }
+    html {
+        @apply font-sans antialiased;
+        font-feature-settings: "cv11", "ss01", "ss03";
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+    }
+    body {
+        @apply bg-background text-foreground;
+    }
+    h1, h2, h3, h4, h5, h6 {
+        @apply font-heading tracking-tight;
+    }
+    code, kbd, pre, samp {
+        @apply font-mono;
+    }
+    :focus-visible {
+        @apply outline-2 outline-offset-2 outline-ring;
+    }
+    [data-slot="card"],
+    [data-slot="popover-content"],
+    [data-slot="dialog-content"] {
+        @apply backdrop-blur-[2px];
+    }
+}
+
+@layer utilities {
+    .bg-grid {
+        background-image:
+            linear-gradient(to right, color-mix(in oklch, var(--foreground) 5%, transparent) 1px, transparent 1px),
+            linear-gradient(to bottom, color-mix(in oklch, var(--foreground) 5%, transparent) 1px, transparent 1px);
+        background-size: 24px 24px;
+    }
+    .bg-grid-dense {
+        background-image:
+            linear-gradient(to right, color-mix(in oklch, var(--foreground) 7%, transparent) 1px, transparent 1px),
+            linear-gradient(to bottom, color-mix(in oklch, var(--foreground) 7%, transparent) 1px, transparent 1px);
+        background-size: 16px 16px;
+    }
+    .mask-radial-fade {
+        mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 35%, transparent 75%);
+        -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 35%, transparent 75%);
+    }
+    .glow {
+        box-shadow:
+            0 1px 0 0 color-mix(in oklch, var(--foreground) 4%, transparent) inset,
+            0 8px 24px -12px color-mix(in oklch, var(--primary) 30%, transparent);
+    }
+}

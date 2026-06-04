@@ -1,0 +1,93 @@
+@startuml Package_Diagram
+skinparam packageStyle rectangle
+
+package "Authentification et securite" as Auth {
+  [Connexion]
+  [JWT / sessions]
+  [Controle d'acces RBAC]
+}
+
+package "Gestion des utilisateurs" as Users {
+  [Comptes]
+  [Roles]
+}
+
+package "Gestion des departements" as Depts {
+  [Departements]
+  [Membres]
+}
+
+package "Gestion des besoins" as Needs {
+  [Besoins]
+  [Lignes de besoin]
+  [Validation departementale]
+}
+
+package "Gestion des appels d'offre" as Tenders {
+  [Appels d'offre]
+  [Lignes d'appel d'offre]
+  [Publication]
+}
+
+package "Gestion des fournisseurs" as Suppliers {
+  [Fournisseurs]
+  [Liste noire]
+}
+
+package "Gestion des offres" as Offers {
+  [Offres fournisseur]
+  [Lignes d'offre]
+  [Evaluation]
+}
+
+package "Gestion des ressources / inventaire" as Inventory {
+  [Ressources]
+  [Ordinateurs]
+  [Imprimantes]
+  [Codes inventaire]
+}
+
+package "Gestion des affectations" as Assignments {
+  [Affectations]
+  [Historique]
+}
+
+package "Gestion de maintenance" as Maintenance {
+  [Pannes]
+  [Interventions]
+  [Constats techniques]
+  [Actions de garantie]
+}
+
+package "Notifications" as Notifications {
+  [Messages internes]
+  [Alertes]
+}
+
+package "Audit / tracabilite" as Audit {
+  [JournalAudit]
+}
+
+Auth ..> Users
+Users ..> Depts
+Needs ..> Depts
+Needs ..> Users
+Tenders ..> Needs
+Offers ..> Tenders
+Offers ..> Suppliers
+Inventory ..> Suppliers
+Inventory ..> Offers
+Assignments ..> Inventory
+Assignments ..> Users
+Assignments ..> Depts
+Maintenance ..> Inventory
+Maintenance ..> Users
+Maintenance ..> Suppliers
+Notifications ..> Users
+Audit ..> Auth
+Audit ..> Needs
+Audit ..> Tenders
+Audit ..> Offers
+Audit ..> Inventory
+Audit ..> Maintenance
+@enduml

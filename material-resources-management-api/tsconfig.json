@@ -1,0 +1,17 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["bun"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "jsx": "preserve",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@frms/shared": ["../packages/shared/src/index.ts"],
+      "@frms/shared/*": ["../packages/shared/src/*"]
+    }
+  },
+  "include": ["src/**/*", "../packages/shared/src/**/*"]
+}

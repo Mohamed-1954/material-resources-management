@@ -1,0 +1,68 @@
+@startuml Component_Diagram
+skinparam componentStyle rectangle
+
+actor "Utilisateur web" as User
+
+component "Frontend web\nReact ou Angular" as Frontend
+
+node "Backend API REST\nMonolithe modulaire" {
+  component "Module authentification" as Auth
+  component "Module utilisateurs / roles" as Users
+  component "Module departements" as Departments
+  component "Module besoins" as Needs
+  component "Module appels d'offre" as Tenders
+  component "Module fournisseurs" as Suppliers
+  component "Module offres" as Offers
+  component "Module ressources / inventaire" as Inventory
+  component "Module affectations" as Assignments
+  component "Module maintenance" as Maintenance
+  component "Module notifications" as Notifications
+  component "Module audit / tracabilite" as Audit
+}
+
+database "PostgreSQL" as DB
+
+User --> Frontend : HTTPS
+Frontend --> Auth : login / refresh
+Frontend --> Needs : API besoins
+Frontend --> Tenders : API appels d'offre
+Frontend --> Offers : API offres
+Frontend --> Inventory : API inventaire
+Frontend --> Maintenance : API maintenance
+
+Auth --> Users
+Needs --> Departments
+Needs --> Notifications
+Tenders --> Needs
+Tenders --> Notifications
+Offers --> Tenders
+Offers --> Suppliers
+Offers --> Notifications
+Inventory --> Suppliers
+Assignments --> Inventory
+Assignments --> Departments
+Maintenance --> Inventory
+Maintenance --> Suppliers
+Maintenance --> Notifications
+
+Auth --> Audit
+Needs --> Audit
+Tenders --> Audit
+Offers --> Audit
+Inventory --> Audit
+Assignments --> Audit
+Maintenance --> Audit
+
+Auth --> DB
+Users --> DB
+Departments --> DB
+Needs --> DB
+Tenders --> DB
+Suppliers --> DB
+Offers --> DB
+Inventory --> DB
+Assignments --> DB
+Maintenance --> DB
+Notifications --> DB
+Audit --> DB
+@enduml

@@ -1,0 +1,67 @@
+# yaml-language-server: $schema=https://json.schemastore.org/compose-spec.json
+# Full-stack compose: postgres + api + web. Run from repo root or from infra/.
+#   docker compose -f infra/docker-compose.yml up -d --build
+#
+# .env is read from repo root (../ relative to this file). BETTER_AUTH_SECRET is required.
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: faculty
+      POSTGRES_PASSWORD: faculty
+      POSTGRES_DB: faculty_resources
+    ports:
+      - "15432:5432"
+    volumes:
+      - faculty_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U faculty -d faculty_resources"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ..
+      dockerfile: material-resources-management-api/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - ../.env
+    environment:
+      NODE_ENV: production
+      # Override host-mapped URL: inside the network, talk directly to postgres:5432.
+      DATABASE_URL: postgres://faculty:faculty@postgres:5432/faculty_resources
+      API_PORT: "3001"
+      API_BASE_URL: http://localhost:3001
+      WEB_ORIGIN: http://localhost:5173
+      BETTER_AUTH_URL: http://localhost:3001
+      TRUSTED_ORIGINS: http://localhost:5173
+    ports:
+      - "3001:3001"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  web:
+    build:
+      context: ..
+      dockerfile: material-resources-management-client/Dockerfile
+      args:
+        VITE_API_BASE_URL: http://localhost:3001
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "5173:80"
+
+volumes:
+  faculty_pgdata:

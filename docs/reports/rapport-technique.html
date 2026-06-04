@@ -1,0 +1,1341 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Rapport technique — Système de gestion des ressources matérielles d'une faculté</title>
+<style>
+  :root{
+    --navy:#16284f; --navy2:#1f3a6d; --teal:#0f766e; --teal-l:#0d9488;
+    --ink:#1d2536; --muted:#5b6577; --line:#cdd5e0; --soft:#f1f5fb; --soft2:#e8eef6;
+    --amber:#b45309; --rose:#9f1239; --green:#15803d;
+  }
+  @page{ size:A4; }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    font-family:"Georgia","Times New Roman",serif; color:var(--ink);
+    font-size:11.2pt; line-height:1.62; counter-reset:chapter figure tableidx listing;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  p{ margin:0 0 3.2mm; text-align:justify; }
+  h1,h2,h3,h4{ font-family:"Segoe UI","Helvetica Neue",Arial,sans-serif; color:var(--navy); line-height:1.25; }
+  .cover{ position:relative; height:262mm; overflow:hidden; color:#fff; break-after:page;
+          background:linear-gradient(135deg,#0c1a30 0%, #16284f 45%, #0f766e 135%); padding:20mm 18mm; }
+  .cover::after{ content:""; position:absolute; right:-60mm; top:-40mm; width:160mm; height:160mm;
+          background:radial-gradient(circle at center, rgba(255,255,255,.08), rgba(255,255,255,0) 70%); }
+  .cover .estab{ font-family:"Segoe UI",sans-serif; letter-spacing:.18em; text-transform:uppercase;
+          font-size:10.5pt; color:#bfe3df; font-weight:600; }
+  .cover .module{ font-family:"Segoe UI",sans-serif; margin-top:2mm; font-size:11pt; color:#cdd9f0; }
+  .cover .ribbon{ width:36mm; height:1.4mm; background:linear-gradient(90deg,#34d3c4,#bfe3df); margin:14mm 0 10mm; border-radius:2px; }
+  .cover .doctype{ font-family:"Segoe UI",sans-serif; font-size:13pt; font-weight:600; color:#9ad7d0; letter-spacing:.05em; }
+  .cover h1{ color:#fff; font-size:33pt; line-height:1.12; margin:5mm 0 0; max-width:152mm; }
+  .cover .subtitle{ font-size:15pt; color:#d8e2f3; margin-top:6mm; max-width:150mm; font-style:italic; font-family:"Georgia",serif;}
+  .cover .meta{ position:absolute; left:18mm; right:18mm; bottom:20mm;
+          display:grid; grid-template-columns:1fr 1fr; gap:5mm 10mm; font-family:"Segoe UI",sans-serif; }
+  .cover .meta .cell .k{ font-size:8.6pt; letter-spacing:.12em; text-transform:uppercase; color:#8fb6cf; }
+  .cover .meta .cell .v{ font-size:11.5pt; color:#fff; margin-top:.6mm; }
+  .cover .footer-line{ position:absolute; left:18mm; right:18mm; bottom:11mm; height:1px; background:rgba(255,255,255,.25); }
+  .cover .ver{ position:absolute; left:18mm; bottom:6mm; font-family:"Segoe UI",sans-serif; font-size:8.6pt; color:#9fb6d6; }
+
+  h1.chapter{ counter-increment:chapter; counter-reset:section figure tableidx listing; break-before:page;
+          font-size:21pt; padding-bottom:3mm; margin:0 0 6mm; border-bottom:3px solid var(--teal); }
+  h1.chapter::before{ content:counter(chapter) ". "; color:var(--teal); }
+  h1.nonum{ counter-increment:none; } h1.nonum::before{ content:""; }
+  h2{ counter-increment:section; font-size:14.5pt; margin:8mm 0 2.5mm; break-after:avoid; }
+  h2::before{ content:counter(chapter) "." counter(section) "  "; color:var(--teal); font-weight:700; }
+  h2.nonum{ counter-increment:none; } h2.nonum::before{ content:""; }
+  h3{ font-size:12pt; color:var(--teal); margin:5mm 0 2mm; break-after:avoid; font-family:"Segoe UI",sans-serif;}
+  h4{ font-size:10.6pt; color:var(--navy2); margin:4mm 0 1.5mm; break-after:avoid; }
+
+  .sheet-title{ font-family:"Segoe UI",sans-serif; color:var(--navy); font-size:16pt; margin:0 0 5mm; }
+  table.meta{ width:100%; border-collapse:collapse; margin:0 0 6mm; font-size:10.3pt; }
+  table.meta td{ border:1px solid var(--line); padding:3mm 4mm; vertical-align:top; }
+  table.meta td.k{ background:var(--navy); color:#fff; width:42mm; font-family:"Segoe UI",sans-serif; font-weight:600; }
+
+  .toc{ break-after:page; }
+  .toc h1{ break-before:auto; }
+  .toc ol{ list-style:none; margin:0; padding:0; }
+  .toc > ol > li{ font-family:"Segoe UI",sans-serif; font-weight:700; color:var(--navy); margin:3.2mm 0 1mm; font-size:11.4pt;}
+  .toc > ol > li > ol{ margin:1mm 0 0 7mm; }
+  .toc > ol > li > ol > li{ font-weight:400; color:var(--ink); font-size:10.4pt; margin:.7mm 0; font-family:"Georgia",serif;}
+
+  ul,ol{ margin:0 0 3.4mm; padding-left:6mm; } li{ margin:.8mm 0; }
+  strong{ color:var(--navy); }
+  code,.mono{ font-family:"Consolas","JetBrains Mono",monospace; font-size:9.6pt; background:var(--soft2);
+          padding:.3mm 1.2mm; border-radius:2px; color:#143; }
+  .lead{ font-size:12pt; color:#33405a; }
+  figure{ break-inside:avoid; margin:6mm 0 7mm; text-align:center; }
+  figcaption{ counter-increment:figure; font-size:9.4pt; color:var(--muted); font-style:italic; margin-top:2.5mm; }
+  figcaption::before{ content:"Figure " counter(chapter) "." counter(figure) " — "; font-weight:700; color:var(--navy); font-style:normal; }
+  .mermaid{ display:flex; justify-content:center; }
+  .mermaid svg{ max-width:100%; height:auto; }
+
+  table.data{ width:100%; border-collapse:collapse; font-size:9.9pt; margin:3mm 0 5mm; }
+  table.data caption{ caption-side:top; counter-increment:tableidx; text-align:left; font-size:9.4pt;
+          color:var(--muted); font-style:italic; margin-bottom:1.6mm; }
+  table.data caption::before{ content:"Tableau " counter(chapter) "." counter(tableidx) " — "; font-weight:700; color:var(--navy); font-style:normal; }
+  table.data th,table.data td{ border:1px solid var(--line); padding:2.4mm 3mm; text-align:left; vertical-align:top; }
+  table.data thead th{ background:var(--navy); color:#fff; font-family:"Segoe UI",sans-serif; font-weight:600; font-size:9.5pt; }
+  table.data tbody tr:nth-child(even) td{ background:var(--soft); }
+  table.data thead{ display:table-header-group; }
+  table.data.small{ font-size:9.2pt; }
+  td.c,th.c{ text-align:center; } td.r,th.r{ text-align:right; }
+
+  .pill{ display:inline-block; font-family:"Segoe UI",sans-serif; font-size:8.4pt; font-weight:700;
+         padding:.4mm 2mm; border-radius:3px; color:#fff; letter-spacing:.02em; }
+  .pill.fr{ background:var(--navy2); } .pill.nfr{ background:var(--teal); } .pill.br{ background:var(--amber); }
+  .pill.ok{ background:var(--green); } .pill.r{ background:var(--rose); }
+
+  .callout{ break-inside:avoid; border:1px solid var(--line); border-left:4px solid var(--teal);
+            background:var(--soft); padding:3mm 4mm; margin:4mm 0; border-radius:0 3px 3px 0; font-size:10.3pt; }
+  .callout.rule{ border-left-color:var(--amber); background:#fdf6ec; }
+  .callout.warn{ border-left-color:var(--rose); background:#fdf0f3; }
+  .callout .ct{ font-family:"Segoe UI",sans-serif; font-weight:700; color:var(--navy); font-size:9.4pt;
+            text-transform:uppercase; letter-spacing:.08em; display:block; margin-bottom:1.2mm; }
+  .code{ font-family:"Consolas","JetBrains Mono",monospace; font-size:8.7pt; line-height:1.42; white-space:pre;
+         background:#0e1b33; color:#d7e3f7; border-radius:4px; padding:4mm; overflow:hidden; break-inside:avoid; margin:3mm 0; }
+  .code .c{ color:#7f96bf; } .code .k{ color:#5fd0c4; } .code .s{ color:#e3b778; }
+  .listing-cap{ counter-increment:listing; font-size:9.2pt; color:var(--muted); font-style:italic; margin:-1mm 0 5mm; }
+  .listing-cap::before{ content:"Extrait " counter(chapter) "." counter(listing) " — "; font-weight:700; color:var(--navy); font-style:normal; }
+  .small{ font-size:9.6pt; color:var(--muted); }
+  .tag{ font-family:"Consolas",monospace; font-size:9pt; color:var(--teal); }
+  hr.soft{ border:none; border-top:1px solid var(--line); margin:6mm 0; }
+</style>
+</head>
+<body>
+
+<!-- ================= COVER ================= -->
+<section class="cover">
+  <div class="estab">Établissement d'enseignement supérieur — Ynov</div>
+  <div class="module">Module : Architecture Logicielle &amp; Développement &middot; Projet de fin de module</div>
+  <div class="ribbon"></div>
+  <div class="doctype">RAPPORT TECHNIQUE — CONCEPTION &amp; RÉALISATION</div>
+  <h1>Système de gestion des ressources matérielles d'une faculté</h1>
+  <div class="subtitle">Architecture, conception détaillée et réalisation d'un monolithe modulaire full-stack (Bun · Hono · Better Auth · Drizzle · PostgreSQL · React 19 · TanStack).</div>
+
+  <div class="meta">
+    <div class="cell"><div class="k">Document</div><div class="v">Rapport technique de réalisation</div></div>
+    <div class="cell"><div class="k">Projet</div><div class="v">Faculty Material Resources Management</div></div>
+    <div class="cell"><div class="k">Auteur</div><div class="v">Mohamed DOURAI</div></div>
+    <div class="cell"><div class="k">Encadrant</div><div class="v">Khalid El FAHSSI</div></div>
+    <div class="cell"><div class="k">Année universitaire</div><div class="v">2025 — 2026</div></div>
+    <div class="cell"><div class="k">Date</div><div class="v">Juin 2026</div></div>
+  </div>
+  <div class="footer-line"></div>
+  <div class="ver">Version 1.0 &middot; Complément du cahier des charges et dossier de spécifications</div>
+</section>
+
+<!-- ================= FICHE DOCUMENT ================= -->
+<h1 class="chapter nonum">Fiche du document</h1>
+<table class="meta">
+  <tr><td class="k">Titre</td><td>Rapport technique — Conception et réalisation du système de gestion des ressources matérielles d'une faculté</td></tr>
+  <tr><td class="k">Type de document</td><td>Rapport technique (architecture, choix technologiques, conception détaillée, sécurité, tests, déploiement)</td></tr>
+  <tr><td class="k">Projet</td><td>Faculty Material Resources Management — monolithe modulaire trois tiers</td></tr>
+  <tr><td class="k">Dépôt du code source</td><td><a href="https://github.com/Mohamed-1954/material-resources-management" style="color:#0f766e; text-decoration:none;">https://github.com/Mohamed-1954/material-resources-management</a></td></tr>
+  <tr><td class="k">Pile technique</td><td>Bun, Hono, Better Auth, Drizzle ORM, PostgreSQL, React 19, TanStack Router/Query/Form, Valibot, TailwindCSS, shadcn/ui, Docker</td></tr>
+  <tr><td class="k">Public visé</td><td>Jury académique, encadrant, développeurs et mainteneurs du système</td></tr>
+  <tr><td class="k">Statut</td><td>Validé — système réalisé, testé et déployable</td></tr>
+  <tr><td class="k">Document associé</td><td>Cahier des charges et dossier de spécifications</td></tr>
+</table>
+
+<h2 class="nonum">Historique des révisions</h2>
+<table class="data">
+  <thead><tr><th>Version</th><th>Date</th><th>Auteur</th><th>Nature des modifications</th></tr></thead>
+  <tbody>
+    <tr><td>0.1</td><td>Mai 2026</td><td>Équipe projet</td><td>Première rédaction : architecture, pile technique, modèle de données.</td></tr>
+    <tr><td>0.8</td><td>Mai 2026</td><td>Équipe projet</td><td>Conception détaillée, sécurité, API, frontend, séquences et tests.</td></tr>
+    <tr><td>1.0</td><td>Juin 2026</td><td>Équipe projet</td><td>Version finale : déploiement, retours d'expérience, bilan et annexes.</td></tr>
+  </tbody>
+</table>
+
+<!-- ================= SOMMAIRE ================= -->
+<section class="toc">
+<h1 class="chapter nonum">Sommaire</h1>
+<ol>
+  <li>Résumé exécutif</li>
+  <li>Introduction
+    <ol><li>Du cahier des charges à la réalisation</li><li>Objectifs du rapport</li><li>Structure du document</li></ol></li>
+  <li>Vue d'ensemble de la solution réalisée
+    <ol><li>Périmètre couvert</li><li>Démarche incrémentale (R0 à R6)</li><li>Chiffres clés</li></ol></li>
+  <li>Architecture logicielle
+    <ol><li>Style : le monolithe modulaire trois tiers</li><li>Justification et alternatives écartées</li><li>Vue d'ensemble</li><li>Couches internes de l'API</li></ol></li>
+  <li>Pile technologique
+    <ol><li>Vue synthétique et versions</li><li>Justification des choix</li></ol></li>
+  <li>Organisation du code
+    <ol><li>Monorepo et espaces de travail</li><li>Le package partagé</li><li>Diagramme de packages</li><li>Arborescence</li></ol></li>
+  <li>Modèle de données
+    <ol><li>Diagramme de classes du domaine</li><li>Tables et schéma relationnel</li><li>Énumérations et statuts</li><li>Intégrité référentielle</li></ol></li>
+  <li>Conception détaillée du backend
+    <ol><li>Découpage en couches</li><li>Machines à états</li><li>Algorithme du moins-disant</li><li>Transactions, audit et notifications</li><li>Validation et gestion des erreurs</li></ol></li>
+  <li>Sécurité et contrôle d'accès
+    <ol><li>Authentification (Better Auth)</li><li>Matrice de permissions (RBAC)</li><li>Sessions, cookies et CORS</li><li>Limitation de débit et secrets</li><li>Traçabilité (audit)</li></ol></li>
+  <li>Interface de programmation (API REST)
+    <ol><li>Conventions et enveloppe de réponse</li><li>Codes d'erreur</li><li>Catalogue des points d'accès</li><li>Diagramme de composants</li></ol></li>
+  <li>Architecture frontend
+    <ol><li>Pile et principes</li><li>Routage par fichiers et garde d'accès</li><li>État serveur et état de session</li><li>Navigation par rôle et tableaux de bord</li><li>Système de composants</li></ol></li>
+  <li>Diagrammes de séquence applicatifs</li>
+  <li>Tests et démarche qualité
+    <ol><li>Stratégie de test en couches</li><li>Tests des services purs</li><li>Outillage qualité et intégration continue</li></ol></li>
+  <li>Déploiement et exploitation
+    <ol><li>Conteneurisation</li><li>Variables d'environnement</li><li>Mise en route</li><li>Diagramme de déploiement</li></ol></li>
+  <li>Difficultés rencontrées et solutions</li>
+  <li>Bilan, limites et perspectives</li>
+  <li>Conclusion</li>
+  <li>Annexes</li>
+</ol>
+</section>
+
+<!-- ================= 1. RÉSUMÉ EXÉCUTIF ================= -->
+<h1 class="chapter">Résumé exécutif</h1>
+<p class="lead">Ce rapport technique décrit la <strong>conception</strong> et la <strong>réalisation</strong> du système de gestion des ressources matérielles d'une faculté, dont les besoins ont été formalisés dans le cahier des charges associé. Il démontre que les exigences spécifiées ont été traduites en une application full-stack fonctionnelle, sécurisée, testée et déployable.</p>
+
+<p>La solution adopte une architecture en <strong>monolithe modulaire trois tiers</strong> : une interface web (application monopage React), une API HTTP organisée en modules métier, et une base de données relationnelle PostgreSQL. Ce style architectural a été retenu délibérément : il offre une séparation claire des responsabilités et une bonne maintenabilité, sans imposer la complexité opérationnelle d'une architecture distribuée — un compromis adapté au périmètre du projet et à un contexte académique.</p>
+
+<p>Le backend repose sur l'écosystème <strong>TypeScript/Bun</strong> : le framework <strong>Hono</strong> pour le routage HTTP, <strong>Better Auth</strong> pour l'authentification et les sessions, <strong>Drizzle ORM</strong> pour l'accès typé à PostgreSQL, et <strong>Valibot</strong> pour la validation. Il est découpé en douze modules métier (utilisateurs, départements, besoins, appels d'offres, fournisseurs, offres, inventaire, affectations, maintenance, notifications, audit, et inscription fournisseur). La logique métier la plus sensible — les machines à états et l'algorithme de sélection du moins-disant — est isolée dans des fonctions pures, intégralement couvertes par des tests unitaires.</p>
+
+<p>Le frontend est une application <strong>React 19</strong> bâtie sur la suite <strong>TanStack</strong> (Router à routage par fichiers, Query pour l'état serveur, Form pour les formulaires) et un système de composants <strong>shadcn/ui</strong> sur <strong>Base UI</strong>, stylé avec <strong>TailwindCSS</strong>. Chaque rôle dispose d'un tableau de bord dédié, et la navigation comme les gardes de route sont pilotées par la <strong>même matrice de permissions</strong> que le serveur, garantissant l'absence de divergence entre les deux couches.</p>
+
+<p>La sécurité est traitée comme une préoccupation de premier ordre : authentification obligatoire, contrôle d'accès basé sur les rôles vérifié côté serveur, rôles privilégiés non auto-attribuables, sessions par cookie, limitation de débit sur l'inscription publique, absence de secrets dans le code, et journalisation d'audit des actions sensibles. L'ensemble est conteneurisé (Docker Compose : PostgreSQL, API, web) et accompagné d'une chaîne d'intégration continue, de tests automatisés et d'un jeu de données de démonstration. Ce rapport détaille chacun de ces aspects, illustrés par des diagrammes de composants, de déploiement, de classes, de séquence et des machines à états.</p>
+
+<!-- ================= 2. INTRODUCTION ================= -->
+<h1 class="chapter">Introduction</h1>
+
+<h2>Du cahier des charges à la réalisation</h2>
+<p>Le cahier des charges associé à ce document a établi <em>ce que</em> le système doit faire : six acteurs, six processus métier, vingt-trois exigences fonctionnelles, dix exigences non fonctionnelles et douze règles de gestion. Le présent rapport décrit <em>comment</em> ces exigences ont été satisfaites par une réalisation logicielle concrète. Il constitue donc le second volet d'une chaîne d'ingénierie continue : l'analyse a produit des spécifications, et ces spécifications ont été traduites en une architecture, une conception détaillée et un code fonctionnel.</p>
+
+<p>L'enjeu n'est pas seulement de « faire fonctionner » l'application, mais de démontrer que les <strong>choix techniques</strong> sont justifiés, que les <strong>règles de gestion</strong> sont effectivement implémentées et vérifiées, et que les <strong>exigences non fonctionnelles</strong> (sécurité, traçabilité, intégrité, maintenabilité) sont prises en charge par construction et non par accident. Chaque section de ce rapport établit ce lien entre une décision technique et l'exigence qu'elle sert.</p>
+
+<h2>Objectifs du rapport</h2>
+<ul>
+  <li><strong>Justifier l'architecture</strong> retenue et la situer par rapport aux alternatives possibles.</li>
+  <li><strong>Documenter la pile technologique</strong> et la raison de chaque choix.</li>
+  <li><strong>Décrire la conception détaillée</strong> du backend et du frontend, en particulier les mécanismes porteurs des règles métier (machines à états, sélection du moins-disant, contrôle d'accès).</li>
+  <li><strong>Exposer la stratégie de sécurité</strong> et de qualité (tests, intégration continue).</li>
+  <li><strong>Expliquer le déploiement</strong> et restituer un retour d'expérience honnête sur les difficultés rencontrées.</li>
+</ul>
+
+<h2>Structure du document</h2>
+<p>Après cette introduction, le rapport présente une vue d'ensemble de la solution réalisée (chapitre 3), puis détaille l'architecture (chapitre 4) et la pile technologique (chapitre 5). L'organisation du code est exposée au chapitre 6, le modèle de données au chapitre 7. La conception détaillée du backend (chapitre 8) et la sécurité (chapitre 9) constituent le cœur technique, complétés par l'API REST (chapitre 10) et l'architecture frontend (chapitre 11). Les diagrammes de séquence (chapitre 12) illustrent les workflows critiques. Le rapport se termine par les tests et la qualité (chapitre 13), le déploiement (chapitre 14), les difficultés rencontrées (chapitre 15), le bilan et les perspectives (chapitre 16), une conclusion (chapitre 17) et des annexes (chapitre 18).</p>
+
+<!-- ================= 3. VUE D'ENSEMBLE ================= -->
+<h1 class="chapter">Vue d'ensemble de la solution réalisée</h1>
+
+<h2>Périmètre couvert</h2>
+<p>La solution réalisée couvre l'intégralité du périmètre fonctionnel spécifié. Les six processus métier sont opérationnels de bout en bout : un enseignant peut soumettre un besoin, un chef de département le valider, un responsable créer et publier un appel d'offre, un fournisseur soumettre une offre, le responsable sélectionner le moins-disant valide, enregistrer la livraison avec génération automatique de codes d'inventaire, affecter les ressources, et — en cas de panne — orchestrer l'intervention, le constat technique et l'action de garantie. Les notifications internes et la journalisation d'audit accompagnent l'ensemble de ces actions.</p>
+
+<h2>Démarche incrémentale (R0 à R6)</h2>
+<p>Le système a été construit par versions successives, chacune livrant un incrément cohérent et testé. Cette approche a permis de stabiliser les fondations transversales (authentification, contrôle d'accès, package partagé) avant d'aborder les fonctionnalités métier les plus riches.</p>
+<table class="data small">
+  <caption>Versions livrées et contenu technique.</caption>
+  <thead><tr><th style="width:20%">Version</th><th>Contenu technique</th></tr></thead>
+  <tbody>
+    <tr><td><strong>R0</strong> Fondation</td><td>Espace de travail Bun, package <code>@frms/shared</code>, configurations de base, Docker Compose, intégration continue.</td></tr>
+    <tr><td><strong>R1</strong> Auth &amp; RBAC</td><td>Better Auth (email/mot de passe, GitHub, Google), matrice de permissions, modules utilisateurs et départements, interface adaptée au rôle.</td></tr>
+    <tr><td><strong>R2</strong> Besoins &amp; appels</td><td>Besoins enseignants, revue/finalisation départementale, appels d'offres, publication/clôture, inclusion des besoins.</td></tr>
+    <tr><td><strong>R3</strong> Fournisseurs &amp; offres</td><td>Inscription fournisseur, soumission d'offre, élimination, sélection du moins-disant, liste noire, acceptation/rejet, notifications.</td></tr>
+    <tr><td><strong>R4</strong> Inventaire &amp; affectations</td><td>Enregistrement de livraison avec codes d'inventaire, spécifications ordinateur/imprimante, affectation/désaffectation avec historique.</td></tr>
+    <tr><td><strong>R5</strong> Maintenance &amp; garantie</td><td>Signalements (contrôle d'affectation), interventions, constats techniques, réparation/remplacement sous garantie (règle de garantie active).</td></tr>
+    <tr><td><strong>R6</strong> Qualité &amp; déploiement</td><td>Tests API et web, intégration continue, pile Docker complète, documentation académique.</td></tr>
+  </tbody>
+</table>
+
+<h2>Chiffres clés</h2>
+<table class="data small">
+  <caption>Quelques indicateurs de la réalisation.</caption>
+  <thead><tr><th>Indicateur</th><th class="c">Valeur</th><th>Commentaire</th></tr></thead>
+  <tbody>
+    <tr><td>Modules métier backend</td><td class="c">12</td><td>auth, users, departments, needs, tenders, suppliers, offers, inventory, assignments, maintenance, notifications, audit</td></tr>
+    <tr><td>Tables relationnelles</td><td class="c">22</td><td>4 tables d'authentification + 18 tables de domaine</td></tr>
+    <tr><td>Énumérations de statut</td><td class="c">11</td><td>rôles, types, statuts (besoin, appel, offre, ressource, panne…)</td></tr>
+    <tr><td>Permissions distinctes</td><td class="c">34</td><td>matrice RBAC unique partagée serveur/client</td></tr>
+    <tr><td>Machines à états</td><td class="c">4</td><td>besoin, appel d'offre, offre, panne</td></tr>
+    <tr><td>Rôles applicatifs</td><td class="c">6</td><td>ADMIN, RESOURCE_MANAGER, DEPARTMENT_HEAD, TEACHER, SUPPLIER, MAINTENANCE_TECHNICIAN</td></tr>
+    <tr><td>Fichiers de tests</td><td class="c">15</td><td>6 côté API (services purs, RBAC, schémas) + 9 côté web</td></tr>
+  </tbody>
+</table>
+
+<!-- ================= 4. ARCHITECTURE ================= -->
+<h1 class="chapter">Architecture logicielle</h1>
+
+<h2>Style : le monolithe modulaire trois tiers</h2>
+<p>L'application est structurée selon un <strong>monolithe modulaire</strong> à trois tiers. Concrètement, elle produit deux artefacts déployables — une API HTTP et une application monopage statique — accompagnés d'un package TypeScript partagé. L'API est <em>internement</em> divisée en modules métier autonomes, mais elle s'exécute en un seul processus. Ce choix est délibéré : le périmètre du projet ne justifie pas la complexité de services distribués, tandis que la séparation modulaire procure l'essentiel des bénéfices (cohésion, faible couplage, testabilité) pour une fraction du coût opérationnel.</p>
+
+<h2>Justification et alternatives écartées</h2>
+<p>Trois grandes options architecturales étaient envisageables :</p>
+<table class="data small">
+  <caption>Options architecturales et décision.</caption>
+  <thead><tr><th style="width:22%">Option</th><th>Avantages</th><th>Inconvénients dans ce contexte</th><th style="width:14%">Décision</th></tr></thead>
+  <tbody>
+    <tr><td>Monolithe « classique » (non modularisé)</td><td>Simplicité immédiate</td><td>Couplage fort, code « plat de spaghetti », maintenabilité dégradée à terme</td><td><span class="pill r">Écartée</span></td></tr>
+    <tr><td>Microservices</td><td>Découplage maximal, scalabilité indépendante</td><td>Complexité opérationnelle (réseau, déploiement, observabilité, transactions distribuées) disproportionnée pour le périmètre</td><td><span class="pill r">Écartée</span></td></tr>
+    <tr><td>Monolithe modulaire</td><td>Séparation claire par domaine, faible couplage, déploiement simple, transactions locales</td><td>Reste un seul artefact (acceptable ici)</td><td><span class="pill ok">Retenue</span></td></tr>
+  </tbody>
+</table>
+<p>Le monolithe modulaire satisfait directement l'exigence de <strong>maintenabilité</strong> (NFR-08) : le système est « structuré en modules simples », chaque module suivant un même squelette (routes, service, accès aux données). Il facilite aussi la <strong>testabilité</strong> en isolant la logique métier dans des services purs, et l'<strong>intégrité</strong> (NFR-04) en conservant des transactions locales à une base unique.</p>
+
+<h2>Vue d'ensemble</h2>
+<figure>
+<pre class="mermaid">
+flowchart LR
+  U([Utilisateur web]):::actor
+  B["Application monopage<br/>React 19 (servie par nginx)"]:::front
+  API["API HTTP — Hono<br/>monolithe modulaire"]:::api
+  AUTH["Better Auth<br/>sessions &amp; OAuth"]:::auth
+  DB[("PostgreSQL")]:::db
+
+  U -->|HTTPS| B
+  B -->|HTTP/JSON, cookie de session<br/>credentials: include| API
+  API --> AUTH
+  AUTH --> DB
+  API -->|Drizzle ORM| DB
+
+  classDef actor fill:#fff,stroke:#16284f,stroke-width:1px;
+  classDef front fill:#e8eef6,stroke:#16284f;
+  classDef api fill:#e6f4f1,stroke:#0f766e;
+  classDef auth fill:#fdf6ec,stroke:#b45309;
+  classDef db fill:#eef2f8,stroke:#1f3a6d;
+</pre>
+<figcaption>Vue d'ensemble : trois tiers (présentation, application, données).</figcaption>
+</figure>
+
+<p>Le navigateur communique avec l'application monopage par HTTPS. Celle-ci dialogue avec l'API par requêtes HTTP/JSON, en transmettant systématiquement le cookie de session (option <code>credentials: include</code>, indispensable dans la configuration multi-origine du développement). L'API délègue l'authentification à Better Auth, qui persiste sessions et comptes dans PostgreSQL, et accède aux données métier via Drizzle ORM.</p>
+
+<h2>Couches internes de l'API</h2>
+<p>À l'intérieur du monolithe, l'API est organisée en couches transverses et en modules métier. Chaque module suit le même patron : un fichier de <em>routes</em> (exposition HTTP), un fichier de <em>service</em> (logique métier pure, fortement testée) et l'accès aux données via le schéma Drizzle partagé.</p>
+<table class="data small">
+  <caption>Couches internes de l'API et leur rôle.</caption>
+  <thead><tr><th style="width:26%">Couche</th><th>Rôle</th></tr></thead>
+  <tbody>
+    <tr><td><code>auth/</code></td><td>Instance Better Auth (adaptateur Drizzle, fournisseurs OAuth, configuration des sessions).</td></tr>
+    <tr><td><code>config/</code></td><td>Chargeur d'environnement typé.</td></tr>
+    <tr><td><code>db/</code></td><td>Schéma Drizzle, client PostgreSQL, migrations, jeu de données initial (<em>seed</em>).</td></tr>
+    <tr><td><code>middleware/</code></td><td>Hydratation de session, <code>requireAuth</code>, <code>requireRole</code>, <code>requirePermission</code>, gestionnaire d'erreurs central, limitation de débit.</td></tr>
+    <tr><td><code>modules/&lt;domaine&gt;/*.routes.ts</code></td><td>Points d'accès HTTP du domaine.</td></tr>
+    <tr><td><code>modules/&lt;domaine&gt;/*.service.ts</code></td><td>Logique métier pure : transitions d'état, algorithmes de sélection (testés unitairement).</td></tr>
+    <tr><td><code>shared/</code></td><td>Fonctions transverses : <code>errors</code>, <code>validate</code> (enveloppe Valibot), <code>audit</code>, <code>notify</code>.</td></tr>
+  </tbody>
+</table>
+
+<div class="callout">
+  <span class="ct">Patrons transverses</span>
+  Quatre patrons structurent le code : (1) la <strong>matrice de permissions comme donnée</strong> — une source unique de vérité consommée par le serveur et le client, sans branchements <code>if (role === …)</code> dispersés ; (2) la <strong>validation partagée</strong> — les mêmes schémas Valibot côté serveur (obligatoire) et côté formulaire (confort) ; (3) les <strong>machines à états</strong> — chaque service expose un validateur de transition unique ; (4) l'<strong>audit et les notifications</strong> en effet de bord — canalisés par des fonctions dédiées qui journalisent sans jamais faire échouer l'opération métier.
+</div>
+
+<!-- ================= 5. PILE TECHNOLOGIQUE ================= -->
+<h1 class="chapter">Pile technologique</h1>
+<p>L'ensemble du projet repose sur un écosystème <strong>TypeScript</strong> unifié, du backend au frontend en passant par le package partagé. Ce choix d'un langage unique réduit la charge cognitive, permet de partager des types et des schémas de validation entre les couches, et garantit la cohérence des contrats de données. Le gestionnaire de paquets et le moteur d'exécution retenus sont <strong>Bun</strong>, pour sa rapidité et sa prise en charge native de TypeScript.</p>
+
+<h2>Vue synthétique et versions</h2>
+<table class="data small">
+  <caption>Principales dépendances du backend (API).</caption>
+  <thead><tr><th style="width:28%">Technologie</th><th style="width:14%">Version</th><th>Rôle</th></tr></thead>
+  <tbody>
+    <tr><td>Bun</td><td>≥ 1.1</td><td>Moteur d'exécution, gestionnaire de paquets, lanceur de tests.</td></tr>
+    <tr><td>Hono</td><td>4.12.x</td><td>Framework HTTP léger (routage, middlewares, en-têtes sécurisés).</td></tr>
+    <tr><td>Better Auth</td><td>1.6.x</td><td>Authentification email/mot de passe et OAuth, sessions, adaptateur Drizzle.</td></tr>
+    <tr><td>Drizzle ORM</td><td>0.45.x</td><td>ORM typé, requêtes SQL sûres, migrations (drizzle-kit 0.31.x).</td></tr>
+    <tr><td>postgres (postgres-js)</td><td>3.4.x</td><td>Pilote PostgreSQL.</td></tr>
+    <tr><td>Valibot</td><td>1.3.x</td><td>Validation de schémas à l'exécution, légère et typée.</td></tr>
+    <tr><td>nanoid</td><td>5.1.x</td><td>Génération d'identifiants courts et uniques.</td></tr>
+    <tr><td>PostgreSQL</td><td>18 (alpine)</td><td>Système de gestion de base de données relationnelle.</td></tr>
+  </tbody>
+</table>
+
+<table class="data small">
+  <caption>Principales dépendances du frontend (web).</caption>
+  <thead><tr><th style="width:28%">Technologie</th><th style="width:14%">Version</th><th>Rôle</th></tr></thead>
+  <tbody>
+    <tr><td>React</td><td>19.x</td><td>Bibliothèque d'interface, composants et hooks.</td></tr>
+    <tr><td>TanStack Router</td><td>1.16x</td><td>Routage par fichiers, typé, avec contexte et gardes <code>beforeLoad</code>.</td></tr>
+    <tr><td>TanStack Query</td><td>5.x</td><td>Gestion de l'état serveur (cache, invalidation, rafraîchissement).</td></tr>
+    <tr><td>TanStack Form</td><td>0.4x</td><td>Gestion des formulaires et de leur validation.</td></tr>
+    <tr><td>Valibot</td><td>1.3.x</td><td>Mêmes schémas de validation que le serveur (via le package partagé).</td></tr>
+    <tr><td>TailwindCSS</td><td>4.x</td><td>Stylage utilitaire ; thème clair/sombre.</td></tr>
+    <tr><td>shadcn/ui + Base UI</td><td>—</td><td>Système de composants accessibles (tableaux, dialogues, menus…).</td></tr>
+    <tr><td>Recharts</td><td>3.x</td><td>Graphiques des tableaux de bord (barres, secteurs).</td></tr>
+    <tr><td>Vite</td><td>8.x</td><td>Outil de construction et serveur de développement.</td></tr>
+    <tr><td>Vitest + Testing Library</td><td>2.x</td><td>Tests unitaires et de composants côté web.</td></tr>
+    <tr><td>oxlint / oxfmt</td><td>1.x</td><td>Analyse statique et formatage (outillage Rust, très rapide).</td></tr>
+  </tbody>
+</table>
+
+<h2>Justification des choix</h2>
+<p><strong>Bun</strong> a été préféré à Node.js pour sa rapidité d'installation et d'exécution, son support TypeScript sans transpilation préalable, et son lanceur de tests intégré (<code>bun:test</code>) qui évite une dépendance supplémentaire côté API. <strong>Hono</strong> est un framework HTTP minimaliste, parfaitement adapté à un monolithe modulaire : il offre un système de middlewares clair (identifiant de requête, journalisation, en-têtes sécurisés, CORS, session) et une signature de routes simple à composer. <strong>Better Auth</strong> apporte une solution d'authentification éprouvée (sessions par cookie, OAuth GitHub/Google, hachage des mots de passe) tout en restant configurable finement, ce qui est essentiel pour interdire l'auto-attribution des rôles privilégiés.</p>
+<p><strong>Drizzle ORM</strong> a été choisi pour sa philosophie « proche du SQL » et son typage de bout en bout : le schéma TypeScript est la source de vérité, les requêtes sont vérifiées à la compilation, et les migrations sont versionnées. Côté frontend, la suite <strong>TanStack</strong> forme un ensemble cohérent : le routage par fichiers rend la structure des écrans lisible, et la séparation entre état serveur (Query) et état de formulaire (Form) clarifie la gestion d'état. Enfin, <strong>Valibot</strong> partagé entre les deux couches incarne le principe « un schéma, des règles identiques » : la validation côté client améliore l'expérience utilisateur, tandis que la validation côté serveur, elle, fait foi.</p>
+
+<!-- ================= 6. ORGANISATION DU CODE ================= -->
+<h1 class="chapter">Organisation du code</h1>
+
+<h2>Monorepo et espaces de travail</h2>
+<p>Le code est organisé en <strong>monorepo</strong> géré par les <em>workspaces</em> de Bun. Trois espaces cohabitent : l'API (<code>material-resources-management-api</code>), le client web (<code>material-resources-management-client</code>) et un package partagé (<code>packages/shared</code>). Cette organisation autorise un partage de code sûr (types, schémas, constantes, matrice de permissions) sans publication de paquet, et une exécution coordonnée via des scripts à la racine (<code>bun run dev</code>, <code>bun run test</code>, <code>bun run typecheck</code>, <code>bun run build</code>).</p>
+
+<h2>Le package partagé</h2>
+<p>Le package <code>@frms/shared</code> est la pierre angulaire de la cohérence entre serveur et client. Il exporte :</p>
+<ul>
+  <li>les <strong>constantes</strong> et énumérations du domaine (rôles, types de ressource, statuts de besoin/appel/offre/ressource/panne, fréquences, événements de notification, codes d'erreur) ;</li>
+  <li>la <strong>matrice de permissions</strong> (<code>PERMISSIONS</code>, <code>ROLE_PERMISSIONS</code>, <code>hasPermission</code>) — source unique consommée des deux côtés ;</li>
+  <li>les <strong>schémas Valibot</strong> de validation des entrées ;</li>
+  <li>les <strong>types DTO</strong> partagés des réponses d'API.</li>
+</ul>
+<p>Cette mutualisation garantit qu'une règle d'autorisation ou un format de données ne peut pas « diverger » entre les deux couches : modifier la matrice de permissions, c'est la modifier partout à la fois.</p>
+
+<h2>Diagramme de packages</h2>
+<figure>
+<pre class="mermaid">
+flowchart TB
+  subgraph shared["packages/shared"]
+    cst["constants"]
+    perm["permissions (RBAC)"]
+    sch["schémas Valibot"]
+    typ["types DTO"]
+  end
+  subgraph api["material-resources-management-api"]
+    a_auth["auth (Better Auth)"]
+    a_cfg["config"]
+    a_db["db (schéma / client Drizzle)"]
+    a_mw["middleware (session, RBAC, erreurs)"]
+    subgraph mods["modules"]
+      direction LR
+      m1["users · departments"]
+      m2["needs · tenders"]
+      m3["suppliers · offers"]
+      m4["inventory · assignments"]
+      m5["maintenance · notifications · audit"]
+    end
+    a_sh["shared (audit, errors, notify, validate)"]
+  end
+  subgraph web["material-resources-management-client"]
+    w_routes["routes (par fichiers)"]
+    w_feat["features (tableaux de bord, …)"]
+    w_comp["components (layout, ui)"]
+    w_lib["lib (api-client, auth-client, session, permissions)"]
+  end
+  shared --> api
+  shared --> web
+  mods --> a_db
+  mods --> a_mw
+  mods --> a_sh
+  w_routes --> w_feat
+  w_routes --> w_comp
+  w_routes --> w_lib
+  w_lib -.HTTP/JSON.-> api
+</pre>
+<figcaption>Diagramme de packages : package partagé, API modulaire et client web.</figcaption>
+</figure>
+
+<h2>Arborescence</h2>
+<p>La structure des répertoires reflète le découpage modulaire :</p>
+<div class="code"><span class="c">.</span>
+├── material-resources-management-api/      <span class="c"># API Hono (monolithe modulaire)</span>
+│   └── src/
+│       ├── auth/            <span class="c"># configuration Better Auth</span>
+│       ├── config/          <span class="c"># chargeur d'environnement typé</span>
+│       ├── db/              <span class="c"># schéma Drizzle, client, migrate, seed</span>
+│       ├── middleware/      <span class="c"># session, RBAC, gestionnaire d'erreurs, rate-limit</span>
+│       ├── modules/         <span class="c"># 12 modules métier (routes + service)</span>
+│       │   ├── auth/  users/  departments/  needs/  tenders/
+│       │   ├── suppliers/  offers/  inventory/  assignments/
+│       │   └── maintenance/  notifications/  audit/
+│       └── shared/          <span class="c"># audit, errors, notify, validate</span>
+├── material-resources-management-client/   <span class="c"># React + Vite + TanStack</span>
+│   └── src/
+│       ├── components/      <span class="c"># layout (AppShell, sidebar), primitives ui</span>
+│       ├── features/        <span class="c"># tableaux de bord et écrans par domaine</span>
+│       ├── lib/             <span class="c"># api-client, auth-client, session, permissions</span>
+│       └── routes/          <span class="c"># routage par fichiers (TanStack Router)</span>
+├── packages/shared/         <span class="c"># schémas, types, constantes, matrice RBAC</span>
+├── infra/docker-compose.yml <span class="c"># postgres + api + web</span>
+├── docs/                    <span class="c"># documentation académique (ce rapport)</span>
+└── .github/workflows/ci.yml <span class="c"># intégration continue</span></div>
+
+<!-- ================= 7. MODÈLE DE DONNÉES ================= -->
+<h1 class="chapter">Modèle de données</h1>
+<p>Le modèle de données traduit le langage métier en un schéma relationnel. Il se présente d'abord sous forme d'un diagramme de classes du domaine (vue conceptuelle), puis sous forme de tables PostgreSQL (vue physique) avec leurs énumérations et leurs contraintes d'intégrité.</p>
+
+<h2>Diagramme de classes du domaine</h2>
+<p>Pour préserver la lisibilité, le modèle de domaine est présenté en deux vues thématiques complémentaires : la chaîne d'<strong>acquisition</strong> (organisation, besoins, appels d'offres, offres) et le cycle de vie en <strong>inventaire et maintenance</strong> (ressources, affectations, pannes, garanties). Les attributs précis de chaque entité figurent dans les tables du schéma relationnel ci-après.</p>
+
+<figure>
+<pre class="mermaid">
+classDiagram
+  class User { +id +email +name +role +status +departmentId +supplierId }
+  class Department { +id +name +code +headUserId }
+  class DepartmentMember { +departmentId +userId +role }
+  class Supplier { +id +companyName +location +status +blacklistReason }
+  class NeedRequest { +id +departmentId +requestedByUserId +status +notes }
+  class NeedItem { +id +resourceType +brand +quantity +justification }
+  class Tender { +id +reference +title +status +startDate +endDate }
+  class TenderItem { +id +resourceType +specs +quantity }
+  class SupplierOffer { +id +status +totalPrice +eliminationReason }
+  class SupplierOfferItem { +id +brand +unitPrice +quantity +warrantyMonths }
+  Department "1" --> "*" DepartmentMember
+  Department "1" --> "*" User : membres
+  Department "1" --> "*" NeedRequest
+  User "1" --> "*" NeedRequest : demandeur
+  NeedRequest "1" --> "*" NeedItem
+  Tender "1" --> "*" TenderItem
+  Tender "1" --> "*" SupplierOffer
+  Supplier "1" --> "*" SupplierOffer
+  SupplierOffer "1" --> "*" SupplierOfferItem
+  TenderItem "1" --> "0..*" SupplierOfferItem : répond à
+</pre>
+<figcaption>Modèle de domaine — chaîne d'acquisition (organisation, besoins, appels d'offres, offres).</figcaption>
+</figure>
+
+<figure>
+<pre class="mermaid">
+classDiagram
+  class Supplier { +id +companyName +status }
+  class SupplierOffer { +id +status +totalPrice }
+  class Resource { +id +inventoryCode +resourceType +brand +status +warrantyEndDate }
+  class ComputerSpecs { +resourceId +cpu +ram +disk +screen }
+  class PrinterSpecs { +resourceId +printSpeed +resolution }
+  class ResourceAssignment { +id +targetType +assignedToUserId +assignedToDepartmentId +active }
+  class FailureReport { +id +reportedByUserId +technicianUserId +status +type +severity }
+  class TechnicalReport { +id +explanation +appearedAt +frequency +type }
+  class WarrantyAction { +id +action +decidedByUserId }
+  Supplier "1" --> "*" Resource : livre
+  SupplierOffer "1" --> "*" Resource : origine
+  Resource "1" --> "0..1" ComputerSpecs
+  Resource "1" --> "0..1" PrinterSpecs
+  Resource "1" --> "*" ResourceAssignment
+  Resource "1" --> "*" FailureReport
+  FailureReport "1" --> "0..1" TechnicalReport
+  FailureReport "1" --> "*" WarrantyAction
+</pre>
+<figcaption>Modèle de domaine — inventaire et maintenance (ressources, affectations, pannes, garanties).</figcaption>
+</figure>
+
+<p>Deux entités transverses complètent le modèle : <strong>Notification</strong> (<code>id</code>, <code>userId</code>, <code>event</code>, <code>message</code>, <code>read</code>), rattachée à chaque utilisateur, et <strong>AuditLog</strong> (<code>id</code>, <code>userId</code>, <code>action</code>, <code>entityType</code>, <code>entityId</code>, <code>oldValues</code>, <code>newValues</code>), qui référence n'importe quelle entité du domaine et matérialise la traçabilité.</p>
+
+<h2>Tables et schéma relationnel</h2>
+<p>Le schéma physique comporte vingt-deux tables : quatre tables d'authentification gérées par Better Auth (<code>user</code>, <code>session</code>, <code>account</code>, <code>verification</code>) et dix-huit tables de domaine. Les identifiants sont des chaînes (texte) ; les horodatages sont stockés avec fuseau ; les montants utilisent le type <code>numeric(14,2)</code>.</p>
+
+<table class="data small">
+  <caption>Tables d'authentification et d'organisation.</caption>
+  <thead><tr><th style="width:24%">Table</th><th>Colonnes clés</th></tr></thead>
+  <tbody>
+    <tr><td><code>user</code></td><td>id, email (unique), name, role (déf. TEACHER), status (déf. ACTIVE), departmentId↗, supplierId↗, emailVerified</td></tr>
+    <tr><td><code>session</code></td><td>id, userId↗ (cascade), token (unique), expiresAt, ipAddress, userAgent</td></tr>
+    <tr><td><code>account</code></td><td>id, userId↗ (cascade), providerId, accountId, password (haché), jetons OAuth</td></tr>
+    <tr><td><code>verification</code></td><td>id, identifier, value, expiresAt</td></tr>
+    <tr><td><code>departments</code></td><td>id, name, code (unique), headUserId↗</td></tr>
+    <tr><td><code>department_members</code></td><td>(departmentId, userId) clé primaire composite, role (MEMBER/HEAD)</td></tr>
+    <tr><td><code>suppliers</code></td><td>id, companyName, location, address, website, managerName, status, blacklistedAt, blacklistReason, ownerUserId↗</td></tr>
+  </tbody>
+</table>
+
+<table class="data small">
+  <caption>Tables d'acquisition (besoins, appels d'offres, offres).</caption>
+  <thead><tr><th style="width:24%">Table</th><th>Colonnes clés</th></tr></thead>
+  <tbody>
+    <tr><td><code>need_requests</code></td><td>id, departmentId↗, requestedByUserId↗, status, notes, submittedAt, sentToManagerAt, rejectionReason</td></tr>
+    <tr><td><code>need_items</code></td><td>id, needRequestId↗ (cascade), resourceType, brand, cpu/ram/disk/screen, printSpeed/resolution, quantity, justification</td></tr>
+    <tr><td><code>tenders</code></td><td>id, reference (unique), title, status, startDate, endDate, awardedOfferId↗, createdByUserId↗</td></tr>
+    <tr><td><code>tender_items</code></td><td>id, tenderId↗ (cascade), resourceType, brand, specs (JSON), quantity, sourceNeedItemId↗</td></tr>
+    <tr><td><code>supplier_offers</code></td><td>id, tenderId↗, supplierId↗, status, totalPrice numeric(14,2), eliminationReason, rejectionReason, decidedByUserId↗</td></tr>
+    <tr><td><code>supplier_offer_items</code></td><td>id, offerId↗ (cascade), tenderItemId↗, brand, unitPrice, quantity, warrantyDurationMonths, futureDeliveryDate</td></tr>
+  </tbody>
+</table>
+
+<table class="data small">
+  <caption>Tables d'inventaire, d'affectation et de maintenance.</caption>
+  <thead><tr><th style="width:24%">Table</th><th>Colonnes clés</th></tr></thead>
+  <tbody>
+    <tr><td><code>resources</code></td><td>id, inventoryCode (unique), resourceType, brand, status, supplierId↗, tenderId↗, offerId↗, deliveryDate, warrantyEndDate</td></tr>
+    <tr><td><code>computer_specs</code></td><td>resourceId↗ (clé primaire, cascade), cpu, ram, disk, screen</td></tr>
+    <tr><td><code>printer_specs</code></td><td>resourceId↗ (clé primaire, cascade), printSpeed, resolution</td></tr>
+    <tr><td><code>resource_assignments</code></td><td>id, resourceId↗ (cascade), targetType, assignedToUserId↗, assignedToDepartmentId↗, assignedByUserId↗, assignedAt, unassignedAt, active</td></tr>
+    <tr><td><code>failure_reports</code></td><td>id, resourceId↗, reportedByUserId↗, technicianUserId↗, status, type, frequency, severity, description</td></tr>
+    <tr><td><code>technical_reports</code></td><td>id, failureReportId↗ (cascade), technicianUserId↗, explanation, appearedAt, frequency, type</td></tr>
+    <tr><td><code>warranty_actions</code></td><td>id, failureReportId↗ (cascade), action (REPAIR/REPLACEMENT), reason, decidedByUserId↗</td></tr>
+    <tr><td><code>notifications</code></td><td>id, userId↗ (cascade), event, message, link, read</td></tr>
+    <tr><td><code>audit_logs</code></td><td>id, userId↗, action, entityType, entityId, oldValues (jsonb), newValues (jsonb), ipAddress, userAgent</td></tr>
+  </tbody>
+</table>
+<p class="small">↗ : clé étrangère. « cascade » : suppression en cascade. Les colonnes <code>createdAt</code> et <code>updatedAt</code> (horodatées) sont présentes sur la plupart des tables et omises ici par souci de concision.</p>
+
+<h2>Énumérations et statuts</h2>
+<p>Les valeurs de statut et de type sont centralisées dans le package partagé sous forme d'énumérations, garantissant des libellés identiques côté serveur et client.</p>
+<table class="data small">
+  <caption>Énumérations du domaine et valeurs admissibles.</caption>
+  <thead><tr><th style="width:22%">Énumération</th><th>Valeurs</th></tr></thead>
+  <tbody>
+    <tr><td>Rôle</td><td>ADMIN, RESOURCE_MANAGER, DEPARTMENT_HEAD, TEACHER, SUPPLIER, MAINTENANCE_TECHNICIAN</td></tr>
+    <tr><td>Type de ressource</td><td>COMPUTER, PRINTER</td></tr>
+    <tr><td>Statut de besoin</td><td>DRAFT, SUBMITTED, UNDER_DEPARTMENT_REVIEW, CHANGES_REQUESTED, APPROVED_BY_DEPARTMENT, SENT_TO_RESOURCE_MANAGER, INCLUDED_IN_TENDER, REJECTED</td></tr>
+    <tr><td>Statut d'appel d'offre</td><td>DRAFT, PUBLISHED, CLOSED, EVALUATION, AWARDED, CANCELLED</td></tr>
+    <tr><td>Statut d'offre</td><td>DRAFT, SUBMITTED, UNDER_REVIEW, ELIMINATED, ACCEPTED, REJECTED, WITHDRAWN</td></tr>
+    <tr><td>Statut de ressource</td><td>AVAILABLE, ASSIGNED, UNDER_MAINTENANCE, SENT_TO_SUPPLIER, REPLACED, RETIRED, LOST</td></tr>
+    <tr><td>Statut de panne</td><td>REPORTED, ASSIGNED, IN_PROGRESS, RESOLVED, SEVERE, TECHNICAL_REPORT_CREATED, SENT_TO_SUPPLIER</td></tr>
+    <tr><td>Type de panne</td><td>HARDWARE, SOFTWARE_SYSTEM, SOFTWARE_UTILITY</td></tr>
+    <tr><td>Fréquence de panne</td><td>RARE, FREQUENT, PERMANENT</td></tr>
+    <tr><td>Statut de fournisseur</td><td>ACTIVE, BLACKLISTED, INACTIVE</td></tr>
+    <tr><td>Cible d'affectation</td><td>USER, DEPARTMENT</td></tr>
+  </tbody>
+</table>
+
+<h2>Intégrité référentielle</h2>
+<p>L'intégrité des données (NFR-04) est garantie par plusieurs mécanismes au niveau de la base :</p>
+<ul>
+  <li><strong>Clés étrangères</strong> avec politiques explicites : suppression en <em>cascade</em> pour les éléments dépendants (lignes de besoin, lignes d'offre, spécifications, affectations) et <em>restriction</em> pour les références fortes (un besoin lié à un département ne peut orphceliner ce dernier).</li>
+  <li><strong>Index uniques</strong> sur les identités naturelles : <code>email</code> d'utilisateur, <code>code</code> de département, <code>reference</code> d'appel d'offre et surtout <code>inventoryCode</code> de ressource — concrétisant la règle <span class="pill br">BR-06</span> d'unicité du code d'inventaire.</li>
+  <li><strong>Clé primaire composite</strong> pour l'appartenance départementale (<code>department_members</code>), empêchant les doublons d'adhésion.</li>
+  <li><strong>Index de performance</strong> sur les colonnes interrogées fréquemment (statuts, dates d'appel, <code>active</code> des affectations, <code>userId</code> des notifications), au service de l'exigence de performance (NFR-06).</li>
+  <li><strong>Suppression logique</strong> privilégiée : une ressource « retirée » passe au statut <code>RETIRED</code> plutôt que d'être effacée, et les affectations sont désactivées (<code>active = false</code>) au lieu d'être supprimées, préservant l'historique (BR-11 et la traçabilité).</li>
+</ul>
+
+<!-- ================= 8. CONCEPTION DÉTAILLÉE BACKEND ================= -->
+<h1 class="chapter">Conception détaillée du backend</h1>
+
+<h2>Découpage en couches</h2>
+<p>Chaque module métier respecte une séparation nette des responsabilités sur trois niveaux. Le fichier de <strong>routes</strong> traduit les requêtes HTTP, applique les middlewares d'authentification et de permission, valide les entrées et formate les réponses. Le fichier de <strong>service</strong> contient la logique métier <em>pure</em> : il ne dépend ni de HTTP, ni directement de la base, ce qui le rend testable de manière isolée. L'accès aux données s'effectue via le schéma Drizzle. Les effets de bord transverses (audit, notifications) sont délégués à des fonctions partagées. Cette discipline permet de concentrer le risque métier dans des services testés à 100 % et de garder des routes minces.</p>
+
+<h2>Machines à états</h2>
+<p>Le cœur du domaine repose sur quatre <strong>machines à états</strong>. Chaque service expose un validateur de transition unique (par exemple <code>assertCanTransition</code> pour les besoins, <code>assertTenderTransition</code> pour les appels, <code>assertOfferTransition</code> pour les offres) : c'est le <em>seul</em> endroit où une transition est acceptée ou refusée. Toute tentative de transition illégale lève une erreur métier. Ce mécanisme garantit qu'aucun objet ne peut atteindre un état incohérent, quel que soit le chemin emprunté par l'appelant.</p>
+
+<h3>Cycle de vie d'un besoin</h3>
+<figure>
+<pre class="mermaid">
+stateDiagram-v2
+  [*] --> DRAFT
+  DRAFT --> SUBMITTED
+  SUBMITTED --> UNDER_DEPARTMENT_REVIEW
+  SUBMITTED --> CHANGES_REQUESTED
+  SUBMITTED --> APPROVED_BY_DEPARTMENT
+  SUBMITTED --> REJECTED
+  UNDER_DEPARTMENT_REVIEW --> CHANGES_REQUESTED
+  UNDER_DEPARTMENT_REVIEW --> APPROVED_BY_DEPARTMENT
+  UNDER_DEPARTMENT_REVIEW --> REJECTED
+  CHANGES_REQUESTED --> SUBMITTED
+  APPROVED_BY_DEPARTMENT --> SENT_TO_RESOURCE_MANAGER
+  SENT_TO_RESOURCE_MANAGER --> INCLUDED_IN_TENDER
+  REJECTED --> [*]
+  INCLUDED_IN_TENDER --> [*]
+</pre>
+<figcaption>Machine à états du besoin.</figcaption>
+</figure>
+
+<h3>Cycle de vie d'un appel d'offre et d'une offre</h3>
+<figure>
+<pre class="mermaid">
+stateDiagram-v2
+  [*] --> DRAFT
+  DRAFT --> PUBLISHED
+  DRAFT --> CANCELLED
+  PUBLISHED --> CLOSED
+  PUBLISHED --> CANCELLED
+  CLOSED --> EVALUATION
+  EVALUATION --> AWARDED
+  AWARDED --> [*]
+  CANCELLED --> [*]
+</pre>
+<figcaption>Machine à états de l'appel d'offre.</figcaption>
+</figure>
+
+<figure>
+<pre class="mermaid">
+stateDiagram-v2
+  [*] --> DRAFT
+  DRAFT --> SUBMITTED
+  DRAFT --> WITHDRAWN
+  SUBMITTED --> UNDER_REVIEW
+  SUBMITTED --> ELIMINATED
+  SUBMITTED --> WITHDRAWN
+  UNDER_REVIEW --> ACCEPTED
+  UNDER_REVIEW --> REJECTED
+  UNDER_REVIEW --> ELIMINATED
+  ACCEPTED --> [*]
+  REJECTED --> [*]
+  ELIMINATED --> [*]
+  WITHDRAWN --> [*]
+</pre>
+<figcaption>Machine à états de l'offre fournisseur.</figcaption>
+</figure>
+
+<h3>Cycle de vie d'une panne</h3>
+<figure>
+<pre class="mermaid">
+stateDiagram-v2
+  [*] --> REPORTED
+  REPORTED --> ASSIGNED
+  ASSIGNED --> IN_PROGRESS
+  IN_PROGRESS --> RESOLVED
+  IN_PROGRESS --> SEVERE
+  SEVERE --> TECHNICAL_REPORT_CREATED
+  TECHNICAL_REPORT_CREATED --> SENT_TO_SUPPLIER
+  SENT_TO_SUPPLIER --> RESOLVED
+  RESOLVED --> [*]
+</pre>
+<figcaption>Machine à états de la panne (du signalement à la garantie).</figcaption>
+</figure>
+
+<h2>Algorithme du moins-disant valide</h2>
+<p>La sélection de l'offre gagnante implémente les règles <span class="pill br">BR-05</span>, <span class="pill br">BR-03</span> et <span class="pill br">BR-12</span>. La fonction pure <code>selectLowestValidOffer</code> filtre d'abord les offres <em>valides</em> — celles dont le statut est <code>SUBMITTED</code> ou <code>UNDER_REVIEW</code> et dont le fournisseur n'est pas en liste noire — puis retient celle dont le total est le plus bas. Lors de l'acceptation, le serveur revérifie que l'offre candidate est bien la moins disante valide : si une offre valide strictement inférieure existe, l'acceptation est rejetée par une violation de règle métier.</p>
+<div class="code"><span class="k">function</span> selectLowestValidOffer(offers):
+  candidates = offers.filter(o =&gt;
+       (o.status == SUBMITTED <span class="k">||</span> o.status == UNDER_REVIEW)
+    &amp;&amp; o.supplierStatus == ACTIVE)        <span class="c">// exclut blacklistés, éliminés, rejetés</span>
+  <span class="k">if</span> candidates.isEmpty(): <span class="k">return</span> null
+  <span class="k">return</span> candidates.minBy(o =&gt; o.totalPrice) <span class="c">// moins-disant valide</span></div>
+<div class="listing-cap">Sélection de l'offre valide la moins disante (logique pure, testée unitairement).</div>
+<p>Lorsqu'une offre est acceptée, la même transaction fait passer l'offre retenue à <code>ACCEPTED</code>, bascule les autres offres ouvertes en <code>REJECTED</code>, attribue l'appel (<code>AWARDED</code>) et notifie les fournisseurs concernés. Le total de chaque offre est calculé côté serveur par <code>computeOfferTotal</code> (somme des <em>prix unitaire × quantité</em>), de sorte que les valeurs saisies par le fournisseur restent purement indicatives.</p>
+
+<h2>Transactions, audit et notifications</h2>
+<p>Les opérations métier qui touchent plusieurs tables (acceptation d'offre, enregistrement de livraison, transitions assorties d'effets) sont exécutées dans une <strong>transaction</strong> de base de données. Les helpers d'audit (<code>recordAudit</code>) et de notification (<code>notifyMany</code>) acceptent un exécuteur transactionnel optionnel, de sorte que la trace et les notifications participent à la même transaction lorsque c'est pertinent. Un principe important gouverne ces effets de bord : <strong>l'audit et la notification ne doivent jamais faire échouer une opération métier</strong>. En dehors d'une transaction, leur échec est journalisé mais n'interrompt pas le flux ; cette robustesse évite qu'un incident périphérique ne bloque une décision d'achat ou de garantie.</p>
+
+<h2>Validation et gestion des erreurs</h2>
+<p>Toutes les entrées sont validées au moyen de schémas Valibot via un utilitaire <code>parseOrThrow</code> qui lève une erreur de validation structurée en cas d'échec. Les erreurs applicatives sont modélisées par une hiérarchie de fabriques (<code>ValidationError</code>, <code>UnauthorizedError</code>, <code>ForbiddenError</code>, <code>NotFoundError</code>, <code>ConflictError</code>, <code>BusinessRuleError</code>, <code>TooManyRequestsError</code>) associées à des codes stables. Un gestionnaire d'erreurs central transforme toute exception en une réponse JSON normalisée, incluant un identifiant de requête pour la corrélation des journaux. Cette uniformité simplifie le traitement des erreurs côté client.</p>
+
+<div class="callout">
+  <span class="ct">Pourquoi des services purs ?</span>
+  En isolant les transitions d'état et l'algorithme de sélection dans des fonctions sans dépendance à HTTP ou à la base, on obtient une logique métier <strong>déterministe et testable</strong> sans infrastructure. C'est ce qui permet d'affirmer, preuve à l'appui, que « l'appel d'offre suit son cycle de vie » ou que « le moins-disant valide gagne » : chaque transition et chaque cas de sélection est épinglé par un test unitaire.
+</div>
+
+<!-- ================= 9. SÉCURITÉ ================= -->
+<h1 class="chapter">Sécurité et contrôle d'accès</h1>
+<p>La sécurité est une exigence transverse de premier rang (NFR-01, NFR-02). Elle est traitée à plusieurs niveaux : authentification, autorisation par rôle, gestion des sessions, protection des origines, limitation de débit, gestion des secrets et traçabilité.</p>
+
+<h2>Authentification (Better Auth)</h2>
+<p>L'authentification est confiée à <strong>Better Auth</strong>, configuré avec un adaptateur Drizzle sur PostgreSQL. Trois méthodes sont prises en charge : email/mot de passe (mots de passe hachés, longueur minimale imposée), et les fournisseurs OAuth GitHub et Google (activés conditionnellement selon la présence des identifiants). Les sessions ont une durée de vie de sept jours avec rafraîchissement quotidien.</p>
+<p>Un point de conception <strong>essentiel pour la sécurité</strong> concerne les champs additionnels de l'utilisateur (<code>role</code>, <code>status</code>, <code>departmentId</code>, <code>supplierId</code>) : ils sont déclarés avec l'option <code>input: false</code>, ce qui signifie que Better Auth <em>refuse toute valeur fournie par le client</em>. De plus, un hook de base de données (<code>user.create.before</code>) force le rôle <code>TEACHER</code> et le statut <code>ACTIVE</code> à la création. Conséquence directe : <strong>aucun rôle privilégié ne peut être auto-attribué</strong> lors d'une inscription publique. Seuls les comptes fournisseurs sont créés par auto-inscription (via un point d'accès dédié) ; tous les comptes internes sont provisionnés par l'administrateur ou par le jeu de données initial.</p>
+
+<h2>Matrice de permissions (RBAC)</h2>
+<p>Le contrôle d'accès repose sur une <strong>matrice de permissions traitée comme une donnée</strong>, définie une seule fois dans le package partagé et consommée à la fois par les middlewares du serveur (<code>requirePermission</code>) et par les gardes de route du client. Il n'existe aucun branchement <code>if (role === …)</code> dispersé dans le code métier. Trente-quatre permissions distinctes sont réparties par domaine ; l'administrateur les possède toutes.</p>
+<table class="data small">
+  <caption>Synthèse de la matrice RBAC par rôle.</caption>
+  <thead><tr><th style="width:20%">Rôle</th><th>Permissions accordées (synthèse)</th></tr></thead>
+  <tbody>
+    <tr><td><code>ADMIN</code></td><td>Toutes les permissions (gestion des utilisateurs et rôles, départements, audit, et l'ensemble des permissions métier).</td></tr>
+    <tr><td><code>RESOURCE_MANAGER</code></td><td>Voir tous les besoins et les inclure ; gérer les appels d'offres ; voir et évaluer les offres ; gérer les fournisseurs et la liste noire ; gérer et affecter les ressources ; voir toutes les pannes ; décider des garanties ; consulter l'audit.</td></tr>
+    <tr><td><code>DEPARTMENT_HEAD</code></td><td>Voir, examiner et finaliser les besoins de son département ; voir les ressources et les pannes de son département.</td></tr>
+    <tr><td><code>TEACHER</code></td><td>Créer et voir ses propres besoins ; voir ses ressources ; signaler et voir ses propres pannes.</td></tr>
+    <tr><td><code>SUPPLIER</code></td><td>Voir les appels actifs ; créer et voir ses propres offres ; mettre à jour son profil.</td></tr>
+    <tr><td><code>MAINTENANCE_TECHNICIAN</code></td><td>Voir toutes les pannes ; intervenir ; rédiger des constats techniques.</td></tr>
+  </tbody>
+</table>
+<p>Les permissions sont nommées selon une convention <code>domaine:action[:portée]</code> — par exemple <code>need:create:own</code>, <code>offer:evaluate</code>, <code>supplier:blacklist</code>, <code>resource:assign</code>, <code>audit:view</code>. La portée (<code>own</code>, <code>department</code>, <code>all</code>) encode la granularité de visibilité, ce qui satisfait l'exigence de confidentialité (NFR-10) : un fournisseur ne dispose que de <code>offer:view:own</code> et ne peut donc jamais consulter les offres concurrentes.</p>
+
+<div class="callout">
+  <span class="ct">Défense en profondeur</span>
+  Le contrôle d'accès est appliqué <strong>côté serveur</strong>, où il fait foi. Le client applique les mêmes règles (masquage de boutons, gardes de route) uniquement pour le confort d'usage. Même si un utilisateur contournait l'interface, l'API refuserait toute action non autorisée. Les deux couches partageant la <em>même</em> matrice, elles ne peuvent pas diverger.
+</div>
+
+<h2>Sessions, cookies et CORS</h2>
+<p>Les sessions sont matérialisées par des cookies signés (préfixe <code>frms</code>), marqués <code>httpOnly</code> et <code>sameSite: lax</code>. L'attribut <code>secure</code> est activé automatiquement lorsque l'URL est en HTTPS, et désactivé en développement local (HTTP) afin que le cookie de session soit bien conservé. Le partage de ressources entre origines (CORS) est configuré pour n'autoriser que les origines de confiance (<code>TRUSTED_ORIGINS</code>) et pour accepter les requêtes authentifiées (<code>credentials: true</code>). Côté client, chaque appel transmet <code>credentials: include</code> afin de propager le cookie dans la configuration multi-origine du développement.</p>
+
+<h2>Limitation de débit et secrets</h2>
+<p>L'inscription publique des fournisseurs est protégée par une <strong>limitation de débit</strong> (seau à jetons en mémoire, par adresse IP) afin de prévenir les abus ; un dépassement renvoie le code <code>RATE_LIMITED</code>. Aucun secret n'est stocké dans le code : la clé de signature des sessions (<code>BETTER_AUTH_SECRET</code>), la chaîne de connexion à la base et les identifiants OAuth proviennent exclusivement de variables d'environnement, validées au démarrage. La liste de contrôle de durcissement pour la production prévoit l'activation des cookies <code>secure</code>, l'exécution derrière un proxy TLS, la restriction des origines de confiance et la rotation des secrets.</p>
+
+<h2>Traçabilité (audit)</h2>
+<p>Toutes les actions sensibles — changement de rôle, mise en liste noire, élimination/acceptation/rejet d'offre, décision de garantie, affectation, transitions importantes — sont consignées dans la table <code>audit_logs</code> avec l'auteur, l'action, l'entité visée et les valeurs avant/après. Cette journalisation répond aux exigences de traçabilité (NFR-03) et d'auditabilité (NFR-05) : chaque décision importante peut être justifiée a posteriori. Le journal d'audit n'est consultable que par les rôles disposant de la permission <code>audit:view</code>.</p>
+
+<!-- ================= 10. API REST ================= -->
+<h1 class="chapter">Interface de programmation (API REST)</h1>
+
+<h2>Conventions et enveloppe de réponse</h2>
+<p>Tous les points d'accès métier sont préfixés par <code>/api/*</code> ; Better Auth est monté sous <code>/api/auth/*</code>. Les réponses suivent une <strong>enveloppe uniforme</strong> : en cas de succès, un objet <code>{ data, meta? }</code> (où <code>meta</code> porte la pagination éventuelle) ; en cas d'erreur, un objet <code>{ error: { code, message, details? } }</code>. Cette régularité permet au client de traiter les réponses de façon générique : un utilitaire extrait <code>data</code> et lève une erreur typée porteuse du code et du message en cas d'échec.</p>
+
+<h2>Codes d'erreur</h2>
+<table class="data small">
+  <caption>Codes d'erreur normalisés et statut HTTP associé.</caption>
+  <thead><tr><th>Code</th><th class="c">HTTP</th><th>Signification</th></tr></thead>
+  <tbody>
+    <tr><td><code>VALIDATION_ERROR</code></td><td class="c">400</td><td>Entrée invalide (schéma Valibot non satisfait).</td></tr>
+    <tr><td><code>UNAUTHORIZED</code></td><td class="c">401</td><td>Authentification requise ou session absente.</td></tr>
+    <tr><td><code>FORBIDDEN</code></td><td class="c">403</td><td>Action non autorisée pour le rôle.</td></tr>
+    <tr><td><code>NOT_FOUND</code></td><td class="c">404</td><td>Entité introuvable.</td></tr>
+    <tr><td><code>CONFLICT</code></td><td class="c">409</td><td>Conflit d'état (par ex. unicité violée).</td></tr>
+    <tr><td><code>BUSINESS_RULE_VIOLATION</code></td><td class="c">422</td><td>Règle métier non respectée (fenêtre d'appel, moins-disant, garantie…).</td></tr>
+    <tr><td><code>RATE_LIMITED</code></td><td class="c">429</td><td>Trop de requêtes (limitation de débit).</td></tr>
+    <tr><td><code>INTERNAL_SERVER_ERROR</code></td><td class="c">500</td><td>Erreur interne non prévue.</td></tr>
+  </tbody>
+</table>
+
+<h2>Catalogue des points d'accès</h2>
+<p>Le tableau ci-dessous synthétise les principaux points d'accès par module. Les transitions d'état sont exposées comme des actions explicites (verbe métier dans le chemin) plutôt que comme de simples mises à jour, ce qui rend l'intention visible et auditable.</p>
+<table class="data small">
+  <caption>Catalogue synthétique des points d'accès de l'API.</caption>
+  <thead><tr><th style="width:18%">Module</th><th>Points d'accès représentatifs</th></tr></thead>
+  <tbody>
+    <tr><td>Auth</td><td><code>POST /api/auth/sign-in/email</code>, <code>/sign-up/email</code>, <code>GET /api/auth/session</code>, <code>POST /api/auth-extras/register-supplier</code> (public, limité)</td></tr>
+    <tr><td>Utilisateurs</td><td><code>GET /api/users</code>, <code>/users/me</code>, <code>POST /api/users</code>, <code>PATCH /api/users/:id/role</code>, <code>/status</code></td></tr>
+    <tr><td>Départements</td><td><code>GET/POST /api/departments</code>, <code>/:id/members</code>, <code>PATCH /:id/head</code></td></tr>
+    <tr><td>Besoins</td><td><code>GET/POST /api/needs</code>, <code>POST /:id/{submit|approve|reject|request-changes|send-to-resource-manager}</code></td></tr>
+    <tr><td>Appels d'offres</td><td><code>GET /api/tenders</code>, <code>/active</code>, <code>POST /:id/{publish|close|start-evaluation|cancel}</code>, <code>/include-needs</code></td></tr>
+    <tr><td>Fournisseurs</td><td><code>GET /api/suppliers</code>, <code>/me</code>, <code>POST /:id/{blacklist|remove-from-blacklist}</code></td></tr>
+    <tr><td>Offres</td><td><code>POST /api/offers/by-tender/:id</code>, <code>POST /:id/{submit|withdraw|eliminate|accept|reject}</code></td></tr>
+    <tr><td>Ressources</td><td><code>GET /api/resources</code>, <code>/available</code>, <code>POST /register-delivery</code>, <code>DELETE /:id</code> (retrait logique)</td></tr>
+    <tr><td>Affectations</td><td><code>GET /api/assignments/my</code>, <code>/by-{user|department|resource}/:id</code>, <code>POST /by-resource/:id</code> et <code>/unassign</code></td></tr>
+    <tr><td>Maintenance</td><td><code>GET/POST /api/failures</code>, <code>POST /:id/{assign-technician|start-intervention|resolve|mark-severe|technical-report|request-supplier-repair|request-replacement}</code></td></tr>
+    <tr><td>Notifications</td><td><code>GET /api/notifications</code>, <code>/unread</code>, <code>PATCH /:id/read</code>, <code>/read-all</code></td></tr>
+    <tr><td>Audit</td><td><code>GET /api/audit-logs</code> (permission <code>audit:view</code>), <code>/by-entity/:type/:id</code></td></tr>
+  </tbody>
+</table>
+
+<h2>Diagramme de composants</h2>
+<figure>
+<pre class="mermaid">
+flowchart TB
+  Front["Frontend web — React (SPA)"]:::front
+  subgraph API["API REST — Monolithe modulaire (Hono)"]
+    direction TB
+    Auth["Auth"]:::m
+    Users["Utilisateurs / rôles"]:::m
+    Dept["Départements"]:::m
+    Needs["Besoins"]:::m
+    Tenders["Appels d'offres"]:::m
+    Suppliers["Fournisseurs"]:::m
+    Offers["Offres"]:::m
+    Inv["Ressources / inventaire"]:::m
+    Assign["Affectations"]:::m
+    Maint["Maintenance"]:::m
+    Notif["Notifications"]:::m
+    Audit["Audit / traçabilité"]:::m
+  end
+  DB[("PostgreSQL")]:::db
+
+  Front -->|HTTPS / JSON| Auth
+  Front --> Needs
+  Front --> Tenders
+  Front --> Offers
+  Front --> Inv
+  Front --> Maint
+  Needs --> Notif
+  Tenders --> Needs
+  Offers --> Tenders
+  Offers --> Suppliers
+  Offers --> Notif
+  Assign --> Inv
+  Maint --> Inv
+  Maint --> Suppliers
+  Maint --> Notif
+  Auth --> Audit
+  Offers --> Audit
+  Inv --> Audit
+  Maint --> Audit
+  Auth --> DB
+  Users --> DB
+  Dept --> DB
+  Needs --> DB
+  Tenders --> DB
+  Offers --> DB
+  Inv --> DB
+  Maint --> DB
+  Notif --> DB
+  Audit --> DB
+
+  classDef front fill:#e8eef6,stroke:#16284f;
+  classDef m fill:#e6f4f1,stroke:#0f766e;
+  classDef db fill:#eef2f8,stroke:#1f3a6d;
+</pre>
+<figcaption>Diagramme de composants : frontend, modules backend et base de données.</figcaption>
+</figure>
+
+<!-- ================= 11. FRONTEND ================= -->
+<h1 class="chapter">Architecture frontend</h1>
+
+<h2>Pile et principes</h2>
+<p>Le frontend est une application monopage <strong>React 19</strong> construite avec <strong>Vite</strong>. Trois principes la structurent : un <strong>routage par fichiers</strong> (l'arborescence des fichiers de route définit la navigation), une séparation explicite entre <strong>état serveur</strong> (TanStack Query) et <strong>état de formulaire</strong> (TanStack Form), et un <strong>système de composants</strong> accessible (shadcn/ui sur Base UI, stylé avec TailwindCSS). L'application est servie en production sous forme de fichiers statiques par un serveur nginx.</p>
+
+<h2>Routage par fichiers et garde d'accès</h2>
+<p>Le routeur (TanStack Router) génère l'arbre des routes à partir des fichiers du dossier <code>routes/</code>. La racine <code>__root.tsx</code> exécute un <code>beforeLoad</code> asynchrone qui résout la session de l'utilisateur <em>avant</em> tout rendu, et l'injecte dans le contexte du routeur. Une route de mise en page sans chemin, <code>_authenticated.tsx</code>, protège l'ensemble des écrans authentifiés : si la session est absente, elle redirige vers <code>/login</code> en mémorisant la destination initiale. Chaque écran spécifique à un rôle déclare en plus, dans son <code>beforeLoad</code>, les rôles autorisés via une fabrique de gardes <code>requireRole(...)</code> / <code>requirePermission(...)</code> qui s'appuie sur la matrice partagée. C'est une défense en profondeur : le serveur reste l'autorité, mais le client évite d'afficher des écrans inaccessibles.</p>
+<div class="code"><span class="c">// route-guards.ts — fabrique de garde (extrait simplifié)</span>
+<span class="k">export const</span> requireRole = (...roles) =&gt; gate({ roles })
+<span class="k">function</span> gate(opts) {
+  <span class="k">return</span> ({ context, location }) =&gt; {
+    <span class="k">if</span> (!context.auth.isAuthenticated)
+      <span class="k">throw</span> redirect({ to: <span class="s">"/login"</span>, search: { redirect: location.href } })
+    <span class="k">if</span> (opts.roles &amp;&amp; !opts.roles.includes(context.auth.user.role) &amp;&amp; !isAdmin)
+      <span class="k">throw</span> redirect({ to: <span class="s">"/dashboard"</span> })
+  }
+}</div>
+<div class="listing-cap">Garde de route basée sur la matrice partagée (l'ADMIN contourne les gardes de rôle).</div>
+
+<h2>État serveur et état de session</h2>
+<p>L'état serveur est entièrement géré par <strong>TanStack Query</strong> : chaque liste ou détail est une <em>query</em> identifiée par une clé hiérarchique, avec une durée de fraîcheur (<code>staleTime</code>) calibrée selon la volatilité de la donnée (par exemple plus courte pour les pannes et notifications, plus longue pour les référentiels comme les départements). La <strong>session</strong> elle-même est stockée dans le cache de Query sous la clé <code>["auth","session"]</code>, ce qui évite un arbre de contexte d'authentification séparé : le routeur lit la session depuis le cache, et son rafraîchissement automatique (au retour de focus) maintient l'état à jour. Cette unification de l'état d'authentification dans le cache constitue un choix de conception à la fois élégant et — comme l'illustre le chapitre des difficultés rencontrées — exigeant en rigueur sur la sémantique de fraîcheur.</p>
+
+<h2>Navigation par rôle et tableaux de bord</h2>
+<p>La barre latérale est <strong>filtrée selon le rôle</strong> de l'utilisateur connecté : une structure de navigation déclarative (<code>NAV_SECTIONS</code>) associe à chaque section et à chaque entrée la liste des rôles autorisés ; seules les sections comportant au moins une entrée visible sont affichées. Chaque rôle dispose en outre d'un <strong>tableau de bord dédié</strong>, chargé paresseusement, qui agrège les données pertinentes en graphiques (Recharts) :</p>
+<table class="data small">
+  <caption>Tableaux de bord par rôle et indicateurs présentés.</caption>
+  <thead><tr><th style="width:24%">Rôle</th><th>Contenu du tableau de bord</th></tr></thead>
+  <tbody>
+    <tr><td>Administrateur</td><td>Répartition des utilisateurs par rôle (secteurs), activité d'audit sur 14 jours (barres), dernières entrées d'audit.</td></tr>
+    <tr><td>Responsable</td><td>Pipeline des appels d'offres et résultats des offres (barres), listes des appels / besoins / fournisseurs.</td></tr>
+    <tr><td>Chef de département</td><td>Besoins par étape du cycle (secteurs), liste des membres du département.</td></tr>
+    <tr><td>Enseignant</td><td>Activité personnelle (besoins et pannes par semaine), mes besoins, mes ressources, actions rapides.</td></tr>
+    <tr><td>Fournisseur</td><td>Issues des offres (secteurs), taux d'acceptation, appels actifs.</td></tr>
+    <tr><td>Technicien</td><td>Pannes par statut (barres), constats à produire.</td></tr>
+  </tbody>
+</table>
+
+<h2>Système de composants</h2>
+<p>Les écrans s'appuient sur une bibliothèque de composants accessibles (shadcn/ui sur Base UI). Deux composants transverses méritent d'être cités : <code>DataTable</code>, un tableau générique gérant les états de chargement et les états vides, et <code>StatusBadge</code>, qui transforme un statut technique en pastille colorée lisible. La mise en page authentifiée (<code>AppShell</code>) fournit une barre latérale, un fil d'Ariane, une cloche de notifications et un menu utilisateur. Conformément à l'exigence d'ergonomie (NFR-09), les tableaux affichent des libellés humains (nom, email, référence, code d'inventaire) plutôt que des identifiants techniques, et les parcours sont jalonnés de messages d'erreur explicites et d'états de chargement.</p>
+
+<div class="callout">
+  <span class="ct">Cohérence client / serveur</span>
+  Le frontend importe le <em>même</em> package <code>@frms/shared</code> que l'API : mêmes énumérations, mêmes schémas de validation, même matrice de permissions. Un formulaire valide donc les saisies avec exactement les règles que le serveur appliquera, et la navigation reflète exactement les droits que le serveur autorisera. Cette source unique de vérité élimine une classe entière de bogues de désynchronisation.
+</div>
+
+<!-- ================= 12. SÉQUENCES ================= -->
+<h1 class="chapter">Diagrammes de séquence applicatifs</h1>
+<p>Les diagrammes de séquence décrivent la dynamique des workflows critiques : l'enchaînement des messages entre l'utilisateur, l'interface, les services métier, la base de données et les services transverses (authentification, notifications). Ils explicitent les points de décision (blocs <em>alt</em>) et les répétitions (blocs <em>loop</em>), et montrent où s'appliquent les règles de gestion.</p>
+
+<h2>Authentification et établissement de session</h2>
+<figure>
+<pre class="mermaid">
+sequenceDiagram
+  actor U as Utilisateur
+  participant UI as SPA (React)
+  participant QC as Cache (TanStack Query)
+  participant API as API / Better Auth
+  participant DB as PostgreSQL
+  U->>UI: Saisir les identifiants
+  UI->>API: POST /api/auth/sign-in/email
+  API->>DB: Vérifier le compte et créer la session
+  API-->>UI: 200 + cookie de session (frms)
+  UI->>QC: refreshSession() — staleTime forcé à 0
+  QC->>API: GET /api/auth/session (cookie joint)
+  API-->>QC: Session authentifiée
+  QC-->>UI: Session fraîche en cache
+  UI->>UI: Redirection vers /dashboard
+</pre>
+<figcaption>Authentification : connexion, établissement de session et redirection.</figcaption>
+</figure>
+
+<h2>Soumission d'un besoin</h2>
+<figure>
+<pre class="mermaid">
+sequenceDiagram
+  actor ENS as Enseignant
+  participant UI as Interface web
+  participant AUTH as Auth / RBAC
+  participant BS as Service Besoin
+  participant DB as PostgreSQL
+  participant NS as Notifications
+  ENS->>UI: Remplir le formulaire de besoin
+  UI->>AUTH: Vérifier session et rôle Enseignant
+  AUTH-->>UI: Autorisé
+  UI->>BS: soumettreBesoin(données)
+  BS->>DB: Insérer Besoin + lignes de besoin
+  DB-->>BS: Besoin créé
+  BS->>NS: Notifier le chef de département
+  NS->>DB: Enregistrer la notification
+  BS-->>UI: Confirmation
+  UI-->>ENS: Besoin en attente de validation
+</pre>
+<figcaption>Soumission d'un besoin par un enseignant.</figcaption>
+</figure>
+
+<h2>Création et publication d'un appel d'offre</h2>
+<figure>
+<pre class="mermaid">
+sequenceDiagram
+  actor RR as Responsable
+  participant UI as Interface web
+  participant BS as Service Besoin
+  participant AOS as Service Appel d'offre
+  participant DB as PostgreSQL
+  participant NS as Notifications
+  RR->>UI: Créer un appel d'offre
+  UI->>BS: récupérerBesoinsValidés()
+  BS->>DB: Lire les besoins approuvés
+  DB-->>BS: Besoins
+  BS-->>UI: Besoins disponibles
+  RR->>UI: Définir les lignes et les dates
+  UI->>AOS: publierAppelOffre(dates, lignes)
+  AOS->>AOS: Vérifier dateDébut &lt; dateFin
+  alt dates invalides
+    AOS-->>UI: Erreur de validation
+  else dates valides
+    AOS->>DB: Insérer AppelOffre + lignes
+    AOS->>NS: Notifier les fournisseurs inscrits
+    NS->>DB: Enregistrer les notifications
+    AOS-->>UI: Appel d'offre publié
+  end
+</pre>
+<figcaption>Création d'un appel d'offre avec contrôle de la fenêtre temporelle (BR-01).</figcaption>
+</figure>
+
+<h2>Soumission d'une offre</h2>
+<figure>
+<pre class="mermaid">
+sequenceDiagram
+  actor F as Fournisseur
+  participant UI as Interface fournisseur
+  participant AOS as Service Appel d'offre
+  participant OS as Service Offre
+  participant DB as PostgreSQL
+  F->>UI: Soumettre une offre
+  UI->>AOS: vérifierAppelActif(appelId)
+  AOS->>DB: Lire l'appel d'offre
+  DB-->>AOS: Dates et statut
+  alt appel non actif ou fournisseur blacklisté
+    AOS-->>UI: Soumission refusée (422)
+  else appel actif
+    UI->>OS: enregistrerOffre(lignes, garantie, livraison)
+    OS->>OS: Calculer le total côté serveur
+    OS->>DB: Insérer Offre + lignes
+    OS-->>UI: Offre soumise
+  end
+</pre>
+<figcaption>Soumission d'une offre, conditionnée par la fenêtre active (BR-02).</figcaption>
+</figure>
+
+<h2>Évaluation et sélection du moins-disant</h2>
+<figure>
+<pre class="mermaid">
+sequenceDiagram
+  actor RR as Responsable
+  participant UI as Interface web
+  participant EOS as Service Évaluation
+  participant FS as Service Fournisseur
+  participant DB as PostgreSQL
+  participant NS as Notifications
+  RR->>UI: Évaluer les offres
+  UI->>EOS: listerOffres(appelId)
+  EOS->>DB: Lire offres et fournisseurs
+  DB-->>EOS: Offres
+  loop Pour chaque offre
+    EOS->>FS: vérifierConformité(fournisseur)
+    alt blacklisté ou non conforme
+      EOS->>DB: Marquer éliminée + motif
+      EOS->>NS: Notifier l'élimination
+    else offre valide
+      EOS->>EOS: Conserver comme candidate
+    end
+  end
+  RR->>UI: Confirmer la sélection
+  UI->>EOS: sélectionnerMoinsDisantValide()
+  EOS->>DB: Accepter, rejeter les autres, attribuer l'appel
+  EOS->>NS: Notifier acceptation et rejets
+  EOS-->>UI: Sélection terminée
+</pre>
+<figcaption>Évaluation des offres et sélection du moins-disant valide (BR-04, BR-05, BR-12).</figcaption>
+</figure>
+
+<h2>Livraison et affectation</h2>
+<figure>
+<pre class="mermaid">
+sequenceDiagram
+  actor RR as Responsable
+  participant UI as Interface web
+  participant IS as Service Inventaire
+  participant AS as Service Affectation
+  participant DB as PostgreSQL
+  participant NS as Notifications
+  RR->>UI: Enregistrer la livraison
+  UI->>IS: créerRessourcesLivrées(offreId, ressources)
+  loop Pour chaque ressource
+    IS->>IS: Générer un code d'inventaire unique
+    IS->>DB: Insérer Ressource (+ spécifications)
+  end
+  RR->>UI: Choisir le bénéficiaire
+  UI->>AS: affecterRessource(ressource, cible)
+  AS->>DB: Insérer Affectation (active)
+  AS->>DB: Mettre le statut de la ressource à AFFECTÉE
+  AS->>NS: Notifier le bénéficiaire
+  AS-->>UI: Affectation confirmée
+</pre>
+<figcaption>Livraison, génération des codes d'inventaire (BR-06) et affectation.</figcaption>
+</figure>
+
+<h2>Signalement, intervention et constat technique</h2>
+<figure>
+<pre class="mermaid">
+sequenceDiagram
+  actor ENS as Enseignant
+  actor TM as Technicien
+  participant UI as Interface web
+  participant MS as Service Maintenance
+  participant DB as PostgreSQL
+  participant NS as Notifications
+  ENS->>UI: Signaler une panne
+  UI->>MS: créerPanne(ressource, description)
+  MS->>DB: Vérifier l'affectation active
+  alt ressource non affectée à l'enseignant
+    MS-->>UI: Signalement refusé
+  else autorisé
+    MS->>DB: Insérer Panne (REPORTED)
+    MS->>NS: Notifier le service maintenance
+    MS-->>UI: Panne signalée
+  end
+  TM->>UI: Enregistrer l'intervention
+  UI->>MS: créerIntervention(panne, diagnostic)
+  alt panne réparée
+    MS->>DB: Clôturer la panne (RESOLVED)
+    MS->>NS: Notifier l'enseignant
+  else panne sévère
+    TM->>UI: Rédiger le constat
+    UI->>MS: créerConstat(explication, fréquence, type)
+    MS->>MS: Si imprimante, type = matériel (BR-09)
+    MS->>DB: Insérer Constat (TECHNICAL_REPORT_CREATED)
+    MS->>NS: Notifier le responsable
+  end
+</pre>
+<figcaption>Signalement d'une panne, intervention et rédaction d'un constat (BR-08, BR-09).</figcaption>
+</figure>
+
+<h2>Action de garantie</h2>
+<figure>
+<pre class="mermaid">
+sequenceDiagram
+  actor RR as Responsable
+  actor F as Fournisseur
+  participant UI as Interface web
+  participant GS as Service Garantie
+  participant DB as PostgreSQL
+  participant NS as Notifications
+  RR->>UI: Traiter le constat sévère
+  UI->>GS: vérifierGarantie(ressource)
+  GS->>DB: Lire ressource, fournisseur, fin de garantie
+  alt garantie expirée
+    GS-->>UI: Action de garantie impossible (422)
+  else garantie valide
+    RR->>UI: Choisir réparation ou remplacement
+    UI->>GS: créerActionGarantie(type, constat)
+    GS->>DB: Insérer ActionGarantie
+    GS->>NS: Notifier le fournisseur avec le constat
+    NS-->>F: Demande de garantie
+    GS-->>UI: Demande envoyée
+  end
+</pre>
+<figcaption>Demande de réparation ou de remplacement sous garantie (BR-10).</figcaption>
+</figure>
+
+<!-- ================= 13. TESTS & QUALITÉ ================= -->
+<h1 class="chapter">Tests et démarche qualité</h1>
+
+<h2>Stratégie de test en couches</h2>
+<p>La stratégie de test est <strong>ciblée sur le risque</strong> : l'effort de test se concentre là où réside la complexité sémantique du domaine — les machines à états et l'algorithme de sélection — plutôt que de viser une couverture uniforme et peu signifiante. Les tests sont organisés en couches.</p>
+<table class="data small">
+  <caption>Stratégie de test par couche.</caption>
+  <thead><tr><th style="width:26%">Couche</th><th style="width:18%">Outillage</th><th>Cibles</th></tr></thead>
+  <tbody>
+    <tr><td>Logique pure / machines à états</td><td><code>bun:test</code></td><td>Transitions de besoin, d'appel d'offre et d'offre ; <code>isTenderActive</code> ; <code>computeOfferTotal</code> ; <code>selectLowestValidOffer</code> ; règle imprimante-matériel ; validité de garantie.</td></tr>
+    <tr><td>Contrôle d'accès (RBAC)</td><td><code>bun:test</code></td><td><code>hasPermission</code> pour les combinaisons rôle × permission significatives.</td></tr>
+    <tr><td>Validation</td><td><code>bun:test</code></td><td>Schémas Valibot (imprimante sans CPU, longueur de mot de passe, dates ISO…).</td></tr>
+    <tr><td>Primitives d'interface</td><td>Vitest + Testing Library</td><td><code>StatusBadge</code>, <code>DataTable</code> (états vide / chargement / données), <code>EmptyState</code>.</td></tr>
+    <tr><td>Helpers web</td><td>Vitest</td><td>Permissions, gardes de route, session, gestion d'erreurs, clés de requête, utilitaires de formulaire.</td></tr>
+    <tr><td>Bout-en-bout (perspective)</td><td>Playwright</td><td>Parcours « fournisseur → offre », « responsable → acceptation », « enseignant → constat → garantie » (extension future).</td></tr>
+  </tbody>
+</table>
+
+<h2>Tests des services purs</h2>
+<p>Parce que les transitions d'état et la sélection sont isolées dans des fonctions pures, elles se testent sans base de données ni serveur HTTP. C'est ce qui confère la confiance : chaque affirmation du rapport (« l'appel d'offre suit son cycle de vie », « le moins-disant valide gagne », « une panne d'imprimante est nécessairement matérielle ») est <strong>épinglée par un test</strong>. Le projet compte au total quinze fichiers de tests — six côté API (services de besoins, d'appels, d'offres, de maintenance ; matrice de permissions ; schémas) et neuf côté web (tableau de données, badge de statut, état vide, gestion d'erreurs, utilitaires de formulaire, permissions, clés de requête, gardes de route, session).</p>
+
+<h2>Outillage qualité et intégration continue</h2>
+<p>Au-delà des tests, plusieurs garde-fous assurent la qualité : la <strong>vérification de types</strong> TypeScript de bout en bout (<code>bun run typecheck</code>), l'analyse statique et le formatage via <code>oxlint</code> / <code>oxfmt</code> (outillage Rust très rapide) côté web, et une <strong>chaîne d'intégration continue</strong> (GitHub Actions) qui installe les dépendances, lance la vérification de types, les tests et la construction. La base de données nécessaire à d'éventuels tests d'intégration est provisionnée par le workflow. Les portes de qualité (<code>bun install</code>, <code>typecheck</code>, <code>test</code>, <code>build</code>) sont exécutables d'une seule commande à la racine.</p>
+
+<!-- ================= 14. DÉPLOIEMENT ================= -->
+<h1 class="chapter">Déploiement et exploitation</h1>
+
+<h2>Conteneurisation</h2>
+<p>L'ensemble du système est conteneurisé et orchestré par <strong>Docker Compose</strong>. Trois services coopèrent : une base <strong>PostgreSQL 18</strong> (avec volume persistant et sonde de santé <code>pg_isready</code>), l'<strong>API</strong> (construite depuis son Dockerfile, sonde de santé sur <code>/health</code>), et le <strong>web</strong> (application construite puis servie par nginx). Les dépendances de démarrage sont déclarées : l'API attend que PostgreSQL soit sain, et le web attend que l'API soit saine.</p>
+
+<h2>Diagramme de déploiement</h2>
+<figure>
+<pre class="mermaid">
+flowchart TB
+  subgraph Client["Poste utilisateur"]
+    Browser["Navigateur web"]:::a
+  end
+  subgraph Host["Hôte Docker / serveur applicatif"]
+    direction TB
+    subgraph CWeb["Conteneur web (nginx)"]
+      Static["Application monopage statique"]:::a
+    end
+    subgraph CApi["Conteneur API"]
+      REST["API REST (Hono)"]:::a
+      Mods["Modules métier + Better Auth"]:::a
+    end
+  end
+  subgraph DBHost["Service base de données"]
+    PG[("PostgreSQL 18")]:::db
+    Vol["Volume persistant"]:::a
+  end
+  Browser -->|HTTPS :5173| Static
+  Static -->|HTTP/JSON :3001| REST
+  REST --> Mods
+  Mods -->|TCP 5432| PG
+  PG --> Vol
+  classDef a fill:#e8eef6,stroke:#16284f;
+  classDef db fill:#e6f4f1,stroke:#0f766e;
+</pre>
+<figcaption>Diagramme de déploiement : navigateur, conteneurs web et API, base PostgreSQL persistante.</figcaption>
+</figure>
+
+<h2>Variables d'environnement</h2>
+<table class="data small">
+  <caption>Variables d'environnement principales.</caption>
+  <thead><tr><th style="width:30%">Variable</th><th>Rôle</th></tr></thead>
+  <tbody>
+    <tr><td><code>DATABASE_URL</code></td><td>Chaîne de connexion PostgreSQL.</td></tr>
+    <tr><td><code>BETTER_AUTH_SECRET</code></td><td>Secret (≥ 32 caractères) de signature des sessions.</td></tr>
+    <tr><td><code>BETTER_AUTH_URL</code></td><td>URL publique de l'API.</td></tr>
+    <tr><td><code>TRUSTED_ORIGINS</code></td><td>Origines web autorisées (CORS + cookies).</td></tr>
+    <tr><td><code>GITHUB_CLIENT_ID / SECRET</code></td><td>Optionnel — active l'OAuth GitHub.</td></tr>
+    <tr><td><code>GOOGLE_CLIENT_ID / SECRET</code></td><td>Optionnel — active l'OAuth Google.</td></tr>
+    <tr><td><code>VITE_API_BASE_URL</code></td><td>URL de base de l'API utilisée par le client (au build).</td></tr>
+  </tbody>
+</table>
+
+<h2>Mise en route</h2>
+<p>En développement, la base est lancée en conteneur, les migrations sont appliquées puis le jeu de données initial est chargé, et les deux serveurs (API sur le port 3001, web sur 5173) démarrent en parallèle. La pile complète peut aussi être lancée d'une seule commande.</p>
+<div class="code"><span class="c"># Développement</span>
+bun install
+docker compose -f infra/docker-compose.yml up -d postgres
+bun run db:migrate        <span class="c"># applique les migrations</span>
+bun run db:seed           <span class="c"># charge les données de démonstration</span>
+bun run dev               <span class="c"># API :3001 + web :5173</span>
+
+<span class="c"># Pile complète conteneurisée</span>
+docker compose -f infra/docker-compose.yml up -d --build   <span class="c"># postgres + api + web</span></div>
+<div class="listing-cap">Commandes de mise en route en développement et en pile conteneurisée complète.</div>
+
+<div class="callout rule">
+  <span class="ct">Liste de contrôle de durcissement (production)</span>
+  Activer <code>NODE_ENV=production</code> (cookies <code>secure</code>) ; exécuter derrière un proxy terminant TLS ; restreindre <code>TRUSTED_ORIGINS</code> au domaine réel ; faire tourner régulièrement la sauvegarde PostgreSQL ; ne jamais committer le secret de session ; externaliser le journal d'audit vers un stockage longue durée.
+</div>
+
+<!-- ================= 15. DIFFICULTÉS ================= -->
+<h1 class="chapter">Difficultés rencontrées et solutions</h1>
+<p>La réalisation a soulevé plusieurs difficultés instructives, principalement à la frontière entre l'authentification, la gestion d'état côté client et la configuration multi-origine. Les exposer honnêtement éclaire des subtilités réelles du développement full-stack moderne.</p>
+
+<h2>La redirection post-connexion (étude de cas)</h2>
+<p><strong>Symptôme.</strong> Après une connexion réussie, l'utilisateur était renvoyé vers <code>/login</code> au lieu d'atteindre <code>/dashboard</code> ; pourtant, un simple rafraîchissement de la page affichait correctement le tableau de bord. Le bogue était donc strictement <em>côté client</em> et lié au <em>timing</em>.</p>
+<p><strong>Cause racine.</strong> La session est stockée dans le cache de TanStack Query avec une fraîcheur (<code>staleTime</code>) de trente secondes. Après <code>signIn.email</code>, le code appelait <code>fetchQuery</code> pour relire la session ; or <code>fetchQuery</code> est <em>sensible au cache</em> : tant que l'entrée est « fraîche », il renvoie la valeur en cache <strong>sans interroger le réseau</strong>. Comme l'amorçage de l'application avait peuplé le cache avec une session <code>{ user: null }</code> encore fraîche, la relecture renvoyait cette valeur périmée. La navigation déclenchait alors le <code>beforeLoad</code> de la racine, qui relisait la même session nulle, et la garde <code>_authenticated</code> redirigeait vers <code>/login</code>. Au rafraîchissement, un cache vierge forçait un véritable appel réseau — avec le cookie désormais présent — d'où le succès.</p>
+<p><strong>Solution.</strong> Forcer une relecture réseau inconditionnelle sur le seul chemin post-connexion, en surchargeant la fraîcheur à zéro, tout en préservant les trente secondes partout ailleurs :</p>
+<div class="code"><span class="c">// session.ts — relit et résout la session *fraîche* après connexion</span>
+<span class="k">export async function</span> refreshSession(qc) {
+  <span class="k">return</span> qc.fetchQuery({ ...sessionQueryOptions, staleTime: <span class="s">0</span> })
+}</div>
+<div class="listing-cap">Correctif chirurgical : <code>staleTime: 0</code> garantit un appel réseau frais juste après l'authentification.</div>
+<p><strong>Leçon.</strong> Stocker l'état d'authentification dans un cache applicatif est élégant, mais impose de raisonner explicitement sur la sémantique de fraîcheur : un cache « frais mais périmé sémantiquement » est un piège classique. Le correctif est minimal et localisé, ce qui illustre la valeur d'un diagnostic précis avant toute modification.</p>
+
+<h2>Cookies de session en développement local (HTTP)</h2>
+<p><strong>Difficulté.</strong> Les cookies marqués <code>secure</code> ne sont transmis qu'en HTTPS. En développement local (HTTP), un cookie <code>secure</code> n'aurait jamais été renvoyé, empêchant toute persistance de session.</p>
+<p><strong>Solution.</strong> L'attribut <code>secure</code> est calculé dynamiquement selon le schéma de l'URL : actif en HTTPS (production), inactif en HTTP (développement). La session persiste ainsi localement sans compromettre la sécurité en production.</p>
+
+<h2>Configuration multi-origine</h2>
+<p><strong>Difficulté.</strong> En développement, le web (port 5173) et l'API (port 3001) sont des origines distinctes ; par défaut, le navigateur n'attache pas les cookies aux requêtes inter-origines.</p>
+<p><strong>Solution.</strong> Le serveur autorise explicitement l'origine du client (<code>TRUSTED_ORIGINS</code>) et les requêtes authentifiées (<code>credentials: true</code>) ; le client émet chaque requête avec <code>credentials: include</code>. En production conteneurisée, les deux services partagent le domaine <code>localhost</code>, ce qui simplifie le partage du cookie de session.</p>
+
+<h2>Cohérence des autorisations entre couches</h2>
+<p><strong>Difficulté.</strong> Le risque, dans toute application full-stack, est que les règles d'autorisation du client et du serveur divergent au fil des évolutions.</p>
+<p><strong>Solution.</strong> La matrice de permissions est définie une seule fois dans le package partagé et importée des deux côtés. Toute évolution s'applique simultanément au serveur et au client, éliminant par construction la classe de bogues de désynchronisation.</p>
+
+<!-- ================= 16. BILAN ================= -->
+<h1 class="chapter">Bilan, limites et perspectives</h1>
+
+<h2>Bilan</h2>
+<p>Le système réalisé couvre l'intégralité du périmètre spécifié et satisfait les exigences structurantes. Les six processus métier sont opérationnels de bout en bout ; les règles de gestion sont implémentées et, pour les plus critiques, vérifiées par des tests ; les exigences non fonctionnelles de sécurité, de contrôle d'accès, de traçabilité et d'intégrité sont prises en charge par construction. L'architecture en monolithe modulaire s'est révélée adaptée : elle a permis une progression rapide et une bonne maintenabilité, sans coût opérationnel superflu.</p>
+<table class="data small">
+  <caption>Couverture des exigences non fonctionnelles par la réalisation.</caption>
+  <thead><tr><th style="width:22%">Exigence</th><th>Réponse technique</th><th class="c" style="width:12%">État</th></tr></thead>
+  <tbody>
+    <tr><td>Sécurité (NFR-01)</td><td>Better Auth, sessions par cookie, mots de passe hachés, aucun secret en clair.</td><td class="c"><span class="pill ok">Couverte</span></td></tr>
+    <tr><td>Contrôle d'accès (NFR-02)</td><td>Matrice RBAC partagée, vérifiée côté serveur.</td><td class="c"><span class="pill ok">Couverte</span></td></tr>
+    <tr><td>Traçabilité (NFR-03)</td><td>Journal d'audit avec valeurs avant/après.</td><td class="c"><span class="pill ok">Couverte</span></td></tr>
+    <tr><td>Intégrité (NFR-04)</td><td>Clés étrangères, unicité, machines à états, transactions.</td><td class="c"><span class="pill ok">Couverte</span></td></tr>
+    <tr><td>Maintenabilité (NFR-08)</td><td>Monolithe modulaire, package partagé, tests des services purs.</td><td class="c"><span class="pill ok">Couverte</span></td></tr>
+    <tr><td>Ergonomie (NFR-09)</td><td>Tableau de bord par rôle, libellés humains, états de chargement.</td><td class="c"><span class="pill ok">Couverte</span></td></tr>
+    <tr><td>Confidentialité (NFR-10)</td><td>Portées de permission ; un fournisseur ne voit que ses offres.</td><td class="c"><span class="pill ok">Couverte</span></td></tr>
+  </tbody>
+</table>
+
+<h2>Limites</h2>
+<ul>
+  <li>Le <strong>contrôle budgétaire</strong> par département n'est pas implémenté (hors périmètre assumé).</li>
+  <li>Les <strong>notifications</strong> sont uniquement internes ; aucun canal courriel ou SMS.</li>
+  <li>La couverture <strong>bout-en-bout</strong> (Playwright) reste à constituer ; les tests actuels portent sur la logique pure et les composants.</li>
+  <li>Le <strong>périmètre matériel</strong> se limite aux ordinateurs et aux imprimantes.</li>
+  <li>Les seuils de <strong>performance</strong> et de <strong>disponibilité</strong> sont calibrés pour un prototype académique.</li>
+</ul>
+
+<h2>Perspectives</h2>
+<ul>
+  <li><strong>Notifications externes</strong> : ajouter un canal courriel (et éventuellement des préférences par utilisateur).</li>
+  <li><strong>Contrôle budgétaire</strong> : associer un budget aux départements et bloquer les besoins qui le dépassent.</li>
+  <li><strong>Tests bout-en-bout</strong> : couvrir les trois parcours « en or » (fournisseur → offre, responsable → acceptation, enseignant → constat → garantie).</li>
+  <li><strong>Observabilité</strong> : métriques, traçage distribué et externalisation du journal d'audit vers un stockage longue durée.</li>
+  <li><strong>Extensibilité</strong> : la matrice de permissions étant une donnée et chaque module suivant un même squelette, l'ajout de nouveaux types de ressources ou de nouveaux modules suit un chemin balisé.</li>
+</ul>
+
+<!-- ================= 17. CONCLUSION ================= -->
+<h1 class="chapter">Conclusion</h1>
+<p>Ce rapport technique a décrit la conception et la réalisation d'un système full-stack de gestion des ressources matérielles d'une faculté, depuis les choix d'architecture jusqu'au déploiement conteneurisé. La solution adopte un monolithe modulaire trois tiers, un choix justifié par le périmètre et porteur des qualités attendues : séparation claire des responsabilités, maintenabilité, testabilité et intégrité.</p>
+<p>Les décisions techniques ont été constamment reliées aux exigences qu'elles servent : la matrice de permissions partagée garantit le contrôle d'accès et la confidentialité ; les machines à états et l'algorithme de sélection, isolés dans des services purs et testés, garantissent l'intégrité métier ; le journal d'audit assure la traçabilité ; et la conteneurisation rend le système reproductible et déployable. Les difficultés rencontrées, notamment autour de la gestion d'état d'authentification côté client, ont été diagnostiquées avec rigueur et résolues par des correctifs minimaux et ciblés.</p>
+<p>Au regard du cahier des charges, l'ensemble des processus métier et des règles de gestion a été couvert et, pour les plus critiques, vérifié. Le projet démontre ainsi une <strong>maîtrise de bout en bout</strong> de la chaîne d'ingénierie : de l'analyse du besoin à une application fonctionnelle, sécurisée, testée et déployable. Les perspectives identifiées (notifications externes, contrôle budgétaire, tests bout-en-bout, observabilité) tracent une trajectoire d'évolution naturelle vers un usage en production.</p>
+
+<!-- ================= 18. ANNEXES ================= -->
+<h1 class="chapter">Annexes</h1>
+
+<h2 class="nonum">Annexe A — Comptes de démonstration</h2>
+<p>Le jeu de données initial provisionne un compte par rôle (et plusieurs variantes) afin que chaque tableau de bord dispose de contenu. Tous les comptes partagent le mot de passe <code>changeme123</code> et n'existent qu'en environnement local.</p>
+<table class="data small">
+  <caption>Comptes de démonstration (extrait).</caption>
+  <thead><tr><th>Email</th><th>Rôle</th><th>Département / Société</th></tr></thead>
+  <tbody>
+    <tr><td><code>admin@faculty.local</code></td><td>ADMIN</td><td>—</td></tr>
+    <tr><td><code>manager@faculty.local</code></td><td>RESOURCE_MANAGER</td><td>—</td></tr>
+    <tr><td><code>cs.head@faculty.local</code></td><td>DEPARTMENT_HEAD</td><td>Informatique (CS)</td></tr>
+    <tr><td><code>teacher@faculty.local</code></td><td>TEACHER</td><td>Informatique (CS)</td></tr>
+    <tr><td><code>tech@faculty.local</code></td><td>MAINTENANCE_TECHNICIAN</td><td>—</td></tr>
+    <tr><td><code>supplier@faculty.local</code></td><td>SUPPLIER</td><td>Acme Hardware</td></tr>
+  </tbody>
+</table>
+
+<h2 class="nonum">Annexe B — Commandes utiles</h2>
+<div class="code"><span class="c"># Portes de qualité</span>
+bun install
+bun run typecheck     <span class="c"># vérification de types (API + web)</span>
+bun run test          <span class="c"># tests (API + web)</span>
+bun run build         <span class="c"># construction des deux artefacts</span>
+
+<span class="c"># Base de données</span>
+bun run db:generate   <span class="c"># génère une migration depuis le schéma</span>
+bun run db:migrate    <span class="c"># applique les migrations</span>
+bun run db:seed       <span class="c"># charge les données de démonstration</span>
+
+<span class="c"># Pile Docker</span>
+docker compose -f infra/docker-compose.yml up -d --build
+docker compose -f infra/docker-compose.yml ps</div>
+
+<h2 class="nonum">Annexe C — Références</h2>
+<ul class="small">
+  <li>Documentation Hono — framework HTTP TypeScript.</li>
+  <li>Documentation Better Auth — authentification et sessions.</li>
+  <li>Documentation Drizzle ORM — schéma, requêtes et migrations.</li>
+  <li>Documentation TanStack (Router, Query, Form) — gestion du routage et de l'état côté React.</li>
+  <li>Documentation PostgreSQL — système de gestion de base de données.</li>
+  <li>Cahier des charges et dossier de spécifications du projet (document associé).</li>
+  <li>Code source du projet — <a href="https://github.com/Mohamed-1954/material-resources-management" style="color:#0f766e;">github.com/Mohamed-1954/material-resources-management</a></li>
+</ul>
+
+<!-- INSERT_POINT -->
+
+<script src="assets/mermaid.min.js"></script>
+<script>
+  try {
+    mermaid.initialize({
+      startOnLoad:false, theme:'base',
+      themeVariables:{
+        primaryColor:'#e8eef6', primaryBorderColor:'#16284f', primaryTextColor:'#16284f',
+        secondaryColor:'#e6f4f1', tertiaryColor:'#fdf6ec',
+        lineColor:'#0f766e', fontFamily:'Georgia, serif', fontSize:'15px',
+        clusterBkg:'#f1f5fb', clusterBorder:'#9fb0c9'
+      },
+      flowchart:{ useMaxWidth:true, htmlLabels:true, curve:'basis', nodeSpacing:34, rankSpacing:42 },
+      sequence:{ useMaxWidth:true, wrap:true, mirrorActors:false },
+      state:{ useMaxWidth:true },
+      class:{ useMaxWidth:true }
+    });
+    mermaid.run({ querySelector:'.mermaid' })
+      .then(()=>{ window.__MERMAID_DONE = true; })
+      .catch((e)=>{ window.__MERMAID_ERROR = String((e && e.stack) || e); });
+  } catch(e){ window.__MERMAID_ERROR = String((e && e.stack) || e); }
+</script>
+</body>
+</html>

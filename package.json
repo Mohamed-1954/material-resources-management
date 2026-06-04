@@ -1,0 +1,37 @@
+{
+  "name": "faculty-material-resources-management",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Academic full-stack project: Faculty Material Resources Management System (modular monolith).",
+  "workspaces": [
+    "material-resources-management-api",
+    "material-resources-management-client",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:api": "bun --filter material-resources-management-api dev",
+    "dev:web": "bun --filter material-resources-management-client dev",
+    "dev": "bun run --parallel dev:api dev:web",
+    "build:api": "bun --filter material-resources-management-api build",
+    "build:web": "bun --filter material-resources-management-client build",
+    "build": "bun run build:api && bun run build:web",
+    "test:api": "bun --filter material-resources-management-api test",
+    "test:web": "bun --filter material-resources-management-client test",
+    "test": "bun run test:api && bun run test:web",
+    "typecheck:api": "bun --filter material-resources-management-api typecheck",
+    "typecheck:web": "bun --filter material-resources-management-client typecheck",
+    "typecheck": "bun run typecheck:api && bun run typecheck:web",
+    "lint": "bun --filter material-resources-management-client lint",
+    "db:generate": "bun --filter material-resources-management-api db:generate",
+    "db:migrate": "bun --filter material-resources-management-api db:migrate",
+    "db:seed": "bun --filter material-resources-management-api db:seed",
+    "docker:up": "docker compose -f infra/docker-compose.yml up -d",
+    "docker:down": "docker compose -f infra/docker-compose.yml down"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3"
+  },
+  "engines": {
+    "bun": ">=1.1.0"
+  }
+}

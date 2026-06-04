@@ -1,0 +1,185 @@
+@startuml Class_Diagram
+skinparam classAttributeIconSize 0
+hide methods
+
+class Utilisateur {
+  +id: UUID
+  +nom: String
+  +email: String
+  +motDePasseHash: String
+  +statut: StatutCompte
+}
+
+class Role {
+  +id: UUID
+  +nom: String
+}
+
+class Departement {
+  +id: UUID
+  +nom: String
+  +budgetAnnuel: Decimal
+}
+
+class Fournisseur {
+  +id: UUID
+  +nomSociete: String
+  +lieu: String
+  +adresse: String
+  +siteInternet: String
+  +gerant: String
+  +blackliste: Boolean
+}
+
+class Besoin {
+  +id: UUID
+  +dateSoumission: DateTime
+  +statut: StatutBesoin
+  +commentaire: String
+}
+
+class LigneBesoin {
+  +id: UUID
+  +typeMateriel: TypeMateriel
+  +quantite: Integer
+  +caracteristiques: String
+}
+
+class AppelOffre {
+  +id: UUID
+  +reference: String
+  +titre: String
+  +dateDebut: Date
+  +dateFin: Date
+  +statut: StatutAppelOffre
+}
+
+class LigneAppelOffre {
+  +id: UUID
+  +typeMateriel: TypeMateriel
+  +quantite: Integer
+  +specifications: String
+}
+
+class OffreFournisseur {
+  +id: UUID
+  +dateSoumission: DateTime
+  +dateLivraisonPrevue: Date
+  +dureeGarantieMois: Integer
+  +total: Decimal
+  +statut: StatutOffre
+  +motifElimination: String
+}
+
+class LigneOffre {
+  +id: UUID
+  +marque: String
+  +prixUnitaire: Decimal
+  +quantite: Integer
+  +sousTotal: Decimal
+}
+
+abstract class Ressource {
+  +id: UUID
+  +numeroInventaire: String
+  +codeBarres: String
+  +marque: String
+  +dateLivraison: Date
+  +finGarantie: Date
+  +statut: StatutRessource
+}
+
+class Ordinateur {
+  +cpu: String
+  +ram: String
+  +disqueDur: String
+  +ecran: String
+}
+
+class Imprimante {
+  +vitesseImpression: String
+  +resolution: String
+}
+
+class Affectation {
+  +id: UUID
+  +dateDebut: Date
+  +dateFin: Date
+  +commentaire: String
+}
+
+class Panne {
+  +id: UUID
+  +dateSignalement: DateTime
+  +dateApparition: Date
+  +description: String
+  +statut: StatutPanne
+}
+
+class InterventionMaintenance {
+  +id: UUID
+  +dateIntervention: DateTime
+  +diagnostic: String
+  +reparee: Boolean
+}
+
+class ConstatTechnique {
+  +id: UUID
+  +explication: String
+  +frequence: FrequencePanne
+  +ordre: OrdrePanne
+  +severite: SeveritePanne
+  +dateCreation: DateTime
+}
+
+class ActionGarantie {
+  +id: UUID
+  +typeAction: TypeActionGarantie
+  +dateDemande: DateTime
+  +statut: StatutActionGarantie
+}
+
+class Notification {
+  +id: UUID
+  +titre: String
+  +message: String
+  +dateEnvoi: DateTime
+  +lue: Boolean
+}
+
+class JournalAudit {
+  +id: UUID
+  +acteurId: UUID
+  +action: String
+  +cible: String
+  +dateAction: DateTime
+  +details: String
+}
+
+Utilisateur "0..*" -- "1" Departement : appartient a
+Utilisateur "*" -- "*" Role : possede
+Departement "1" -- "0..*" Besoin : regroupe
+Utilisateur "1" -- "0..*" Besoin : soumet
+Besoin "1" -- "1..*" LigneBesoin : contient
+AppelOffre "1" -- "1..*" LigneAppelOffre : contient
+AppelOffre "1" -- "0..*" OffreFournisseur : recoit
+Fournisseur "1" -- "0..*" OffreFournisseur : soumet
+OffreFournisseur "1" -- "1..*" LigneOffre : contient
+LigneAppelOffre "1" -- "0..*" LigneOffre : repond a
+OffreFournisseur "1" -- "0..*" Ressource : origine livraison
+Fournisseur "1" -- "0..*" Ressource : livre
+Ressource <|-- Ordinateur
+Ressource <|-- Imprimante
+Ressource "1" -- "0..*" Affectation : historique
+Departement "1" -- "0..*" Affectation : beneficiaire
+Utilisateur "0..1" -- "0..*" Affectation : beneficiaire
+Utilisateur "1" -- "0..*" Panne : signale
+Ressource "1" -- "0..*" Panne : subit
+Panne "1" -- "0..*" InterventionMaintenance : traite par
+Utilisateur "1" -- "0..*" InterventionMaintenance : technicien
+InterventionMaintenance "0..1" -- "0..1" ConstatTechnique : produit
+ConstatTechnique "0..1" -- "0..1" ActionGarantie : declenche
+ActionGarantie "0..*" -- "1" Fournisseur : adressee a
+Utilisateur "1" -- "0..*" Notification : recoit
+Utilisateur "1" -- "0..*" JournalAudit : realise
+@enduml

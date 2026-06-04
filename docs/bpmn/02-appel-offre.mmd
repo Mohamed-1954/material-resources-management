@@ -1,0 +1,23 @@
+flowchart LR
+  EVT_DEBUT((Debut))
+  EVT_FIN((Fin))
+
+  subgraph RR["Lane : Responsable ressources"]
+    R1["Regrouper les besoins valides"]
+    R2["Creer les lignes de l'appel d'offre"]
+    R3["Definir date de debut et date de fin"]
+    R4{"Dates valides ?"}
+    R5["Corriger les dates"]
+    R6["Publier l'appel d'offre"]
+    R7["Notifier les fournisseurs inscrits"]
+  end
+
+  subgraph SYS["Lane : Systeme"]
+    S1["Verifier coherence des lignes"]
+    S2["Passer le statut a Publie"]
+    S3["Rendre l'appel visible pendant la periode active"]
+  end
+
+  EVT_DEBUT --> R1 --> R2 --> S1 --> R3 --> R4
+  R4 -->|Non| R5 --> R3
+  R4 -->|Oui| R6 --> S2 --> S3 --> R7 --> EVT_FIN

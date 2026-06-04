@@ -1,0 +1,33 @@
+flowchart LR
+  EVT_DEBUT((Debut))
+  EVT_FIN((Fin))
+
+  subgraph F["Lane : Fournisseur"]
+    F1["Consulter appels d'offres actifs"]
+    F2["Saisir offre : marque, prix, garantie, livraison"]
+    F3["Soumettre l'offre"]
+    F4["Recevoir notification acceptation ou rejet"]
+  end
+
+  subgraph SYS["Lane : Systeme"]
+    S1{"Appel d'offre actif ?"}
+    S2["Enregistrer offre"]
+    S3["Bloquer soumission"]
+    S4["Calculer total et classer offres valides"]
+  end
+
+  subgraph RR["Lane : Responsable ressources"]
+    R1["Consulter offres recues"]
+    R2{"Fournisseur en liste noire ou non conforme ?"}
+    R3["Eliminer avec motif"]
+    R4["Comparer offres valides"]
+    R5["Selectionner le moins-disant valide"]
+    R6["Notifier fournisseur accepte"]
+    R7["Notifier fournisseurs rejetes"]
+  end
+
+  EVT_DEBUT --> F1 --> F2 --> F3 --> S1
+  S1 -->|Non| S3 --> F4 --> EVT_FIN
+  S1 -->|Oui| S2 --> R1 --> R2
+  R2 -->|Oui| R3 --> F4 --> EVT_FIN
+  R2 -->|Non| S4 --> R4 --> R5 --> R6 --> R7 --> F4 --> EVT_FIN

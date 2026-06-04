@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bun run *)",
+      "mcp__claude_ai_Context7__query-docs",
+      "Bash(bun add *)",
+      "Bash(docker compose *)",
+      "mcp__claude_ai_Context7__resolve-library-id",
+      "WebFetch(domain:www.better-auth.com)",
+      "Bash(bunx tsr *)",
+      "Bash(bunx @tanstack/router-cli generate)",
+      "Bash(curl -s -c /tmp/cookies -X POST \"http://localhost:3001/api/auth/sign-in/email\" -H \"Content-Type: application/json\" -H \"Origin: http://localhost:5173\" -d \"{\\\\\"email\\\\\":\\\\\"admin@faculty.local\\\\\",\\\\\"password\\\\\":\\\\\"changeme123\\\\\"}\" -o /dev/null)",
+      "Bash(curl -s -b /tmp/cookies -H \"Origin: http://localhost:5173\" \"http://localhost:3001/api/auth/get-session\")",
+      "WebFetch(domain:hono.dev)",
+      "WebFetch(domain:orm.drizzle.team)",
+      "Bash(bun --version)",
+      "Bash(java -version)"
+    ]
+  }
+}

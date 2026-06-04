@@ -1,0 +1,45 @@
+flowchart TD
+  REQ["Exigences du systeme de gestion des ressources materielles"]
+
+  FR["Exigences fonctionnelles"]
+  NFR["Exigences non fonctionnelles"]
+  BR["Regles metier"]
+
+  REQ --> FR
+  REQ --> NFR
+  REQ --> BR
+
+  FR --> FR1["FR-01 Authentification securisee"]
+  FR --> FR2["FR-04/05 Gestion et validation des besoins"]
+  FR --> FR3["FR-07 Gestion des appels d'offres"]
+  FR --> FR4["FR-08/09 Fournisseurs et soumission des offres"]
+  FR --> FR5["FR-10/11 Evaluation et selection"]
+  FR --> FR6["FR-13/14 Livraison et inventaire"]
+  FR --> FR7["FR-16 Affectation des ressources"]
+  FR --> FR8["FR-18/19 Signalement et intervention"]
+  FR --> FR9["FR-20/21 Constats et garanties"]
+  FR --> FR10["FR-22/23 Notifications et audit"]
+
+  NFR --> NFR1["NFR-01 Securite"]
+  NFR --> NFR2["NFR-02 Controle d'acces"]
+  NFR --> NFR3["NFR-03 Tracabilite"]
+  NFR --> NFR4["NFR-04 Integrite des donnees"]
+  NFR --> NFR5["NFR-06 Performance"]
+  NFR --> NFR6["NFR-08 Maintenabilite"]
+  NFR --> NFR7["NFR-09 Ergonomie"]
+
+  BR --> BR1["BR-01 Dates debut/fin d'appel d'offre"]
+  BR --> BR2["BR-02 Soumission uniquement pendant appel actif"]
+  BR --> BR3["BR-04 Motif obligatoire d'elimination"]
+  BR --> BR4["BR-05 Selection du moins-disant valide"]
+  BR --> BR5["BR-06 Code inventaire unique"]
+  BR --> BR6["BR-08 Constat obligatoire pour panne severe"]
+  BR --> BR7["BR-09 Panne imprimante uniquement materielle"]
+  BR --> BR8["BR-10 Garantie avant expiration"]
+
+  NFR1 -.-> FR1
+  NFR2 -.-> FR
+  NFR3 -.-> FR10
+  BR4 -.-> FR5
+  BR5 -.-> FR6
+  BR6 -.-> FR9

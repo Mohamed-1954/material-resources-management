@@ -1,0 +1,57 @@
+flowchart TD
+  ROOT["Projet gestion des ressources materielles"]
+
+  ROOT --> A["Analyse"]
+  A --> A1["Cahier des charges"]
+  A --> A2["Acteurs"]
+  A --> A3["Exigences"]
+  A --> A4["Regles metier"]
+
+  ROOT --> B["Modelisation metier"]
+  B --> B1["BPMN besoins"]
+  B --> B2["BPMN appel offre"]
+  B --> B3["BPMN offres"]
+  B --> B4["BPMN inventaire"]
+  B --> B5["BPMN maintenance"]
+
+  ROOT --> C["Modelisation UML"]
+  C --> C1["Cas utilisation"]
+  C --> C2["Packages"]
+  C --> C3["Classes"]
+  C --> C4["Sequences"]
+
+  ROOT --> D["Architecture"]
+  D --> D1["Architecture 3 tiers"]
+  D --> D2["Composants"]
+  D --> D3["Deploiement"]
+  D --> D4["Choix techniques"]
+
+  ROOT --> E["Implementation"]
+  E --> E1["Release 1 acquisition"]
+  E --> E2["Release 2 inventaire maintenance"]
+
+  ROOT --> F["Tests"]
+  F --> F1["Tests unitaires"]
+  F --> F2["Tests integration"]
+  F --> F3["Tests validation"]
+
+  ROOT --> G["Integration"]
+  G --> G1["Fusion modules"]
+  G --> G2["Donnees de test"]
+  G --> G3["Correction anomalies"]
+
+  ROOT --> H["Deploiement"]
+  H --> H1["Docker"]
+  H --> H2["Base PostgreSQL"]
+  H --> H3["Configuration securite"]
+
+  ROOT --> I["Rapport"]
+  I --> I1["Analyse"]
+  I --> I2["Diagrammes"]
+  I --> I3["Architecture"]
+  I --> I4["Bilan"]
+
+  ROOT --> J["Presentation"]
+  J --> J1["Slides"]
+  J --> J2["Demonstration"]
+  J --> J3["Questions reponses"]

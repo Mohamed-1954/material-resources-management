@@ -1,0 +1,27 @@
+@startuml Deployment_Diagram
+skinparam componentStyle rectangle
+
+node "Poste utilisateur" as Client {
+  artifact "Navigateur web" as Browser
+}
+
+node "Serveur applicatif ou Docker host" as AppHost {
+  node "Conteneur frontend" as FrontendContainer {
+    artifact "Application web statique" as Frontend
+  }
+  node "Conteneur backend API" as BackendContainer {
+    artifact "API REST" as API
+    artifact "Modules metier" as Modules
+  }
+}
+
+node "Serveur base de donnees" as DBHost {
+  database "PostgreSQL" as PostgreSQL
+  artifact "Volume persistant" as Volume
+}
+
+Browser --> Frontend : HTTPS
+Frontend --> API : HTTPS / JSON
+API --> PostgreSQL : TCP 5432
+PostgreSQL --> Volume : lecture/ecriture
+@enduml

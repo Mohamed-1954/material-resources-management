@@ -1,0 +1,33 @@
+flowchart LR
+  EVT_DEBUT((Debut))
+  EVT_FIN((Fin))
+
+  subgraph F["Lane : Fournisseur"]
+    F1["Livrer les ressources"]
+    F2["Fournir informations de societe si nouveau fournisseur"]
+  end
+
+  subgraph RR["Lane : Responsable ressources"]
+    R1["Receptionner la livraison"]
+    R2{"Fournisseur complet dans le systeme ?"}
+    R3["Completer lieu, adresse, site web, gerant"]
+    R4["Verifier ressources livrees"]
+    R5["Attribuer numero inventaire ou code-barres"]
+    R6["Enregistrer ressources en inventaire"]
+    R7{"Affectation immediate ?"}
+    R8["Affecter a enseignant ou departement"]
+    R9["Notifier beneficiaires"]
+  end
+
+  subgraph SYS["Lane : Systeme"]
+    S1["Controler unicite du code inventaire"]
+    S2["Mettre statut : disponible ou affectee"]
+    S3["Journaliser livraison et affectation"]
+  end
+
+  EVT_DEBUT --> F1 --> R1 --> R2
+  R2 -->|Non| F2 --> R3 --> R4
+  R2 -->|Oui| R4
+  R4 --> R5 --> S1 --> R6 --> R7
+  R7 -->|Oui| R8 --> S2 --> S3 --> R9 --> EVT_FIN
+  R7 -->|Non| S2 --> S3 --> EVT_FIN

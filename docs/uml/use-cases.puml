@@ -1,0 +1,203 @@
+@startuml Global_Use_Cases
+left to right direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+
+actor "Responsable des ressources" as RR
+actor "Chef de departement" as CD
+actor "Enseignant" as ENS
+actor "Fournisseur" as F
+actor "Technicien de maintenance" as TM
+actor "Administrateur systeme" as ADM
+
+rectangle "Systeme de gestion des ressources materielles" {
+  usecase "S'authentifier" as UC_AUTH
+  usecase "Gerer utilisateurs\net roles" as UC_USERS
+  usecase "Gerer departements" as UC_DEPT
+  usecase "Soumettre besoin" as UC_BESOIN
+  usecase "Valider besoins" as UC_VALIDER
+  usecase "Transmettre besoins\nconsolides" as UC_TRANSMETTRE
+  usecase "Creer appel d'offre" as UC_AO
+  usecase "Consulter appels\nd'offres actifs" as UC_CONS_AO
+  usecase "Soumettre offre" as UC_OFFRE
+  usecase "Eliminer fournisseur\navec motif" as UC_ELIM
+  usecase "Selectionner moins-disant\nvalide" as UC_SELECT
+  usecase "Notifier acteurs" as UC_NOTIFY
+  usecase "Enregistrer livraison" as UC_LIV
+  usecase "Gerer inventaire" as UC_INV
+  usecase "Affecter ressource" as UC_AFF
+  usecase "Signaler panne" as UC_PANNE
+  usecase "Gerer intervention" as UC_INTERV
+  usecase "Rediger constat\ntechnique" as UC_CONSTAT
+  usecase "Demander reparation\nou remplacement" as UC_GARANTIE
+  usecase "Consulter journal\nd'audit" as UC_AUDIT
+}
+
+RR --> UC_AUTH
+CD --> UC_AUTH
+ENS --> UC_AUTH
+F --> UC_AUTH
+TM --> UC_AUTH
+ADM --> UC_AUTH
+
+ADM --> UC_USERS
+ADM --> UC_DEPT
+ADM --> UC_AUDIT
+
+ENS --> UC_BESOIN
+ENS --> UC_PANNE
+ENS --> UC_NOTIFY
+
+CD --> UC_VALIDER
+CD --> UC_TRANSMETTRE
+CD --> UC_NOTIFY
+
+RR --> UC_AO
+RR --> UC_ELIM
+RR --> UC_SELECT
+RR --> UC_LIV
+RR --> UC_INV
+RR --> UC_AFF
+RR --> UC_GARANTIE
+RR --> UC_NOTIFY
+RR --> UC_AUDIT
+
+F --> UC_CONS_AO
+F --> UC_OFFRE
+F --> UC_NOTIFY
+
+TM --> UC_INTERV
+TM --> UC_CONSTAT
+TM --> UC_NOTIFY
+
+UC_VALIDER .> UC_TRANSMETTRE : <<include>>
+UC_AO .> UC_NOTIFY : <<include>>
+UC_SELECT .> UC_NOTIFY : <<include>>
+UC_LIV .> UC_INV : <<include>>
+UC_AFF .> UC_NOTIFY : <<include>>
+UC_CONSTAT .> UC_GARANTIE : <<extend>>
+UC_ELIM .> UC_NOTIFY : <<include>>
+@enduml
+
+@startuml Responsable_Use_Cases
+left to right direction
+actor "Responsable des ressources" as RR
+rectangle "Acquisition, inventaire et garantie" {
+  usecase "Creer appel d'offre" as U1
+  usecase "Evaluer offres" as U2
+  usecase "Eliminer fournisseur avec motif" as U3
+  usecase "Selectionner moins-disant valide" as U4
+  usecase "Enregistrer livraison" as U5
+  usecase "Attribuer code inventaire" as U6
+  usecase "Affecter ressource" as U7
+  usecase "Gerer ressources" as U8
+  usecase "Traiter constat technique" as U9
+  usecase "Demander reparation ou remplacement" as U10
+}
+RR --> U1
+RR --> U2
+RR --> U3
+RR --> U4
+RR --> U5
+RR --> U6
+RR --> U7
+RR --> U8
+RR --> U9
+RR --> U10
+U2 .> U3 : <<extend>>
+U2 .> U4 : <<include>>
+U5 .> U6 : <<include>>
+U9 .> U10 : <<extend>>
+@enduml
+
+@startuml Chef_Departement_Use_Cases
+left to right direction
+actor "Chef de departement" as CD
+rectangle "Gestion departementale des besoins" {
+  usecase "Demander besoins aux enseignants" as U1
+  usecase "Consulter besoins recus" as U2
+  usecase "Modifier besoins apres concertation" as U3
+  usecase "Valider besoins" as U4
+  usecase "Transmettre besoins au responsable" as U5
+  usecase "Envoyer liste previsionnelle d'affectation" as U6
+}
+CD --> U1
+CD --> U2
+CD --> U3
+CD --> U4
+CD --> U5
+CD --> U6
+U4 .> U5 : <<include>>
+U5 .> U6 : <<include>>
+@enduml
+
+@startuml Enseignant_Use_Cases
+left to right direction
+actor "Enseignant" as ENS
+rectangle "Espace enseignant" {
+  usecase "Consulter mes ressources" as U1
+  usecase "Soumettre besoin" as U2
+  usecase "Suivre statut du besoin" as U3
+  usecase "Signaler panne" as U4
+  usecase "Suivre panne" as U5
+}
+ENS --> U1
+ENS --> U2
+ENS --> U3
+ENS --> U4
+ENS --> U5
+U4 .> U1 : <<include>>
+@enduml
+
+@startuml Fournisseur_Use_Cases
+left to right direction
+actor "Fournisseur" as F
+rectangle "Espace fournisseur" {
+  usecase "Creer compte societe" as U1
+  usecase "Consulter appels actifs" as U2
+  usecase "Soumettre offre" as U3
+  usecase "Consulter notification de decision" as U4
+  usecase "Traiter demande de garantie" as U5
+}
+F --> U1
+F --> U2
+F --> U3
+F --> U4
+F --> U5
+U3 .> U2 : <<include>>
+@enduml
+
+@startuml Technicien_Use_Cases
+left to right direction
+actor "Technicien de maintenance" as TM
+rectangle "Maintenance" {
+  usecase "Consulter pannes assignees" as U1
+  usecase "Enregistrer intervention" as U2
+  usecase "Cloturer panne reparee" as U3
+  usecase "Rediger constat technique" as U4
+  usecase "Transmettre constat au responsable" as U5
+}
+TM --> U1
+TM --> U2
+TM --> U3
+TM --> U4
+TM --> U5
+U4 .> U5 : <<include>>
+@enduml
+
+@startuml Administrateur_Use_Cases
+left to right direction
+actor "Administrateur systeme" as ADM
+rectangle "Administration et securite" {
+  usecase "Gerer comptes utilisateurs" as U1
+  usecase "Attribuer roles" as U2
+  usecase "Gerer referentiel departements" as U3
+  usecase "Consulter journal d'audit" as U4
+  usecase "Parametrer securite" as U5
+}
+ADM --> U1
+ADM --> U2
+ADM --> U3
+ADM --> U4
+ADM --> U5
+@enduml

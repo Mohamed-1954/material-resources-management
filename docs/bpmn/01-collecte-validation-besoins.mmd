@@ -1,0 +1,31 @@
+flowchart LR
+  EVT_DEBUT((Debut))
+  EVT_FIN((Fin))
+
+  subgraph EN["Lane : Enseignant"]
+    E1["Recevoir la demande de besoins"]
+    E2["Saisir besoin materiel"]
+    E3["Soumettre le besoin"]
+    E4["Recevoir notification de decision"]
+  end
+
+  subgraph CD["Lane : Chef de departement"]
+    C1["Demander les besoins aux enseignants"]
+    C2["Consulter les besoins recus"]
+    C3{"Besoin clair et pertinent ?"}
+    C4["Demander correction"]
+    C5["Organiser concertation et ajustements"]
+    C6["Valider les besoins consolides"]
+    C7["Transmettre au responsable"]
+    C8["Envoyer liste previsionnelle d'affectation"]
+  end
+
+  subgraph RR["Lane : Responsable ressources"]
+    R1["Recevoir besoins valides du departement"]
+    R2["Classer besoins pour futur appel d'offre"]
+  end
+
+  EVT_DEBUT --> C1 --> E1 --> E2 --> E3 --> C2 --> C3
+  C3 -->|Non| C4 --> E4 --> E2
+  C3 -->|Oui| C5 --> C6 --> C7 --> R1 --> R2 --> EVT_FIN
+  C6 --> C8 --> R1

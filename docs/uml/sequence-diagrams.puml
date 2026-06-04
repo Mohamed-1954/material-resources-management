@@ -1,0 +1,207 @@
+@startuml Seq_01_Soumission_Besoin
+actor Enseignant as ENS
+boundary "Interface web" as UI
+control "BesoinService" as BS
+control "Auth/RBAC" as AUTH
+database "PostgreSQL" as DB
+control "NotificationService" as NS
+
+ENS -> UI : Remplir formulaire de besoin
+UI -> AUTH : Verifier session et role Enseignant
+AUTH --> UI : Autorise
+UI -> BS : soumettreBesoin(donnees)
+BS -> DB : Inserer Besoin + LigneBesoin
+DB --> BS : Besoin cree
+BS -> NS : Notifier chef de departement
+NS -> DB : Enregistrer notification
+BS --> UI : Confirmation
+UI --> ENS : Besoin en attente de validation
+@enduml
+
+@startuml Seq_02_Validation_Besoins
+actor "Chef de departement" as CD
+boundary "Interface web" as UI
+control "BesoinService" as BS
+control "NotificationService" as NS
+database "PostgreSQL" as DB
+
+CD -> UI : Consulter besoins du departement
+UI -> BS : listerBesoins(departement)
+BS -> DB : Lire besoins en attente
+DB --> BS : Liste
+BS --> UI : Afficher
+CD -> UI : Modifier puis valider
+UI -> BS : validerBesoins(ids, ajustements)
+BS -> DB : Mettre statut Valide + enregistrer ajustements
+BS -> DB : Creer liste previsionnelle d'affectation
+BS -> NS : Notifier responsable
+NS -> DB : Enregistrer notification
+BS --> UI : Transmission confirmee
+@enduml
+
+@startuml Seq_03_Creation_Appel_Offre
+actor "Responsable ressources" as RR
+boundary "Interface web" as UI
+control "AppelOffreService" as AOS
+control "BesoinService" as BS
+control "NotificationService" as NS
+database "PostgreSQL" as DB
+
+RR -> UI : Creer appel d'offre
+UI -> BS : recupererBesoinsValides()
+BS -> DB : Lire besoins valides
+DB --> BS : Besoins
+BS --> UI : Besoins disponibles
+RR -> UI : Definir lignes et dates
+UI -> AOS : publierAppelOffre(dates, lignes)
+AOS -> AOS : Verifier dateDebut < dateFin
+alt dates invalides
+  AOS --> UI : Erreur de validation
+else dates valides
+  AOS -> DB : Inserer AppelOffre + LigneAppelOffre
+  AOS -> NS : Notifier fournisseurs
+  NS -> DB : Enregistrer notifications
+  AOS --> UI : Appel d'offre publie
+end
+@enduml
+
+@startuml Seq_04_Soumission_Offre
+actor Fournisseur as F
+boundary "Interface fournisseur" as UI
+control "OffreService" as OS
+control "AppelOffreService" as AOS
+database "PostgreSQL" as DB
+
+F -> UI : Soumettre offre
+UI -> AOS : verifierAppelActif(appelOffreId)
+AOS -> DB : Lire appel d'offre
+DB --> AOS : Dates et statut
+alt appel non actif
+  AOS --> UI : Soumission refusee
+else appel actif
+  UI -> OS : enregistrerOffre(lignes, garantie, livraison)
+  OS -> OS : Calculer total
+  OS -> DB : Inserer OffreFournisseur + LigneOffre
+  OS --> UI : Offre soumise
+end
+@enduml
+
+@startuml Seq_05_Evaluation_Selection
+actor "Responsable ressources" as RR
+boundary "Interface web" as UI
+control "EvaluationOffreService" as EOS
+control "FournisseurService" as FS
+control "NotificationService" as NS
+database "PostgreSQL" as DB
+
+RR -> UI : Evaluer offres
+UI -> EOS : listerOffres(appelOffreId)
+EOS -> DB : Lire offres et fournisseurs
+DB --> EOS : Offres
+loop Pour chaque offre
+  EOS -> FS : verifierConformite(fournisseur)
+  alt fournisseur blackliste ou non conforme
+    EOS -> DB : Marquer Eliminee avec motif
+    EOS -> NS : Notifier elimination
+  else offre valide
+    EOS -> EOS : Garder candidate
+  end
+end
+RR -> UI : Confirmer selection
+UI -> EOS : selectionnerMoinsDisantValide()
+EOS -> DB : Marquer offre acceptee et autres rejetees
+EOS -> NS : Notifier acceptation et rejets
+EOS --> UI : Selection terminee
+@enduml
+
+@startuml Seq_06_Livraison_Affectation
+actor "Responsable ressources" as RR
+boundary "Interface web" as UI
+control "InventaireService" as IS
+control "AffectationService" as AS
+control "NotificationService" as NS
+database "PostgreSQL" as DB
+
+RR -> UI : Enregistrer livraison
+UI -> IS : creerRessourcesLivrees(offreId, ressources)
+loop Pour chaque ressource
+  IS -> IS : Generer code inventaire unique
+  IS -> DB : Inserer Ressource
+end
+RR -> UI : Choisir beneficiaire
+UI -> AS : affecterRessource(ressource, enseignant/departement)
+AS -> DB : Inserer Affectation
+AS -> DB : Mettre statut ressource Affectee
+AS -> NS : Notifier beneficiaire
+NS -> DB : Enregistrer notification
+AS --> UI : Affectation confirmee
+@enduml
+
+@startuml Seq_07_Signalement_Panne
+actor Enseignant as ENS
+boundary "Interface web" as UI
+control "MaintenanceService" as MS
+control "NotificationService" as NS
+database "PostgreSQL" as DB
+
+ENS -> UI : Signaler panne d'une ressource
+UI -> MS : creerPanne(ressource, description)
+MS -> DB : Verifier affectation active
+alt ressource non affectee a l'enseignant
+  MS --> UI : Signalement refuse
+else ressource autorisee
+  MS -> DB : Inserer Panne
+  MS -> NS : Notifier service maintenance
+  NS -> DB : Enregistrer notification
+  MS --> UI : Panne signalee
+end
+@enduml
+
+@startuml Seq_08_Intervention_Constat
+actor "Technicien maintenance" as TM
+boundary "Interface technicien" as UI
+control "MaintenanceService" as MS
+database "PostgreSQL" as DB
+control "NotificationService" as NS
+
+TM -> UI : Enregistrer intervention
+UI -> MS : creerIntervention(panne, diagnostic)
+MS -> DB : Inserer InterventionMaintenance
+alt panne reparee
+  MS -> DB : Cloturer panne
+  MS -> NS : Notifier enseignant
+else panne severe
+  TM -> UI : Rediger constat
+  UI -> MS : creerConstat(explication, frequence, ordre, severite)
+  MS -> MS : Si ressource imprimante, ordre doit etre materiel
+  MS -> DB : Inserer ConstatTechnique
+  MS -> NS : Notifier responsable
+end
+MS --> UI : Operation enregistree
+@enduml
+
+@startuml Seq_09_Garantie
+actor "Responsable ressources" as RR
+boundary "Interface web" as UI
+control "GarantieService" as GS
+control "FournisseurService" as FS
+control "NotificationService" as NS
+database "PostgreSQL" as DB
+actor Fournisseur as F
+
+RR -> UI : Traiter constat severe
+UI -> GS : verifierGarantie(ressource)
+GS -> DB : Lire ressource, fournisseur, finGarantie
+alt garantie expiree
+  GS --> UI : Action garantie impossible
+else garantie valide
+  RR -> UI : Choisir reparation ou remplacement
+  UI -> GS : creerActionGarantie(typeAction, constat)
+  GS -> DB : Inserer ActionGarantie
+  GS -> FS : identifierFournisseur(ressource)
+  GS -> NS : Notifier fournisseur avec constat
+  NS -> DB : Enregistrer notification
+  NS --> F : Demande de garantie
+  GS --> UI : Demande envoyee
+end
+@enduml

@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  api:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: faculty
+          POSTGRES_PASSWORD: faculty
+          POSTGRES_DB: faculty_resources
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U faculty"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgres://faculty:faculty@localhost:5432/faculty_resources
+      BETTER_AUTH_SECRET: ci-secret-please-change-32-characters
+      BETTER_AUTH_URL: http://localhost:3001
+      TRUSTED_ORIGINS: http://localhost:5173
+      NODE_ENV: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install
+        run: bun install
+      - name: Typecheck (API)
+        run: bun --filter material-resources-management-api typecheck
+      - name: Tests (API)
+        run: bun --filter material-resources-management-api test
+
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install
+        run: bun install
+      - name: Lint (Web)
+        run: bun --filter material-resources-management-client lint
+      - name: Tests (Web)
+        run: bun --filter material-resources-management-client test
+      - name: Build (Web)
+        run: bun --filter material-resources-management-client build
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: [api, web]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate compose
+        run: docker compose -f infra/docker-compose.yml config

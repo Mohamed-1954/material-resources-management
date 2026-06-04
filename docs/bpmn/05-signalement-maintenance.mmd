@@ -1,0 +1,32 @@
+flowchart LR
+  EVT_DEBUT((Debut))
+  EVT_FIN((Fin))
+
+  subgraph E["Lane : Enseignant"]
+    E1["Identifier ressource en panne"]
+    E2["Saisir signalement"]
+    E3["Envoyer au service maintenance"]
+    E4["Recevoir notification de suivi"]
+  end
+
+  subgraph TM["Lane : Technicien de maintenance"]
+    T1["Recevoir panne assignee"]
+    T2["Intervenir au departement"]
+    T3{"Reparation possible immediatement ?"}
+    T4["Reparer et cloturer intervention"]
+    T5{"Panne severe ?"}
+    T6["Rediger constat technique"]
+    T7["Transmettre constat au responsable"]
+  end
+
+  subgraph SYS["Lane : Systeme"]
+    S1["Creer ticket de panne"]
+    S2["Notifier technicien"]
+    S3["Journaliser intervention"]
+  end
+
+  EVT_DEBUT --> E1 --> E2 --> E3 --> S1 --> S2 --> T1 --> T2 --> T3
+  T3 -->|Oui| T4 --> S3 --> E4 --> EVT_FIN
+  T3 -->|Non| T5
+  T5 -->|Non| S3 --> E4 --> EVT_FIN
+  T5 -->|Oui| T6 --> T7 --> S3 --> E4 --> EVT_FIN

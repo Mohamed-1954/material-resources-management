@@ -1,0 +1,32 @@
+flowchart LR
+  EVT_DEBUT((Debut))
+  EVT_FIN((Fin))
+
+  subgraph RR["Lane : Responsable ressources"]
+    R1["Recevoir constat technique severe"]
+    R2["Verifier ressource et garantie"]
+    R3{"Garantie encore valide ?"}
+    R4["Choisir action : reparation ou remplacement"]
+    R5["Envoyer demande au fournisseur avec constat"]
+    R6["Cloturer sans garantie et planifier autre solution"]
+  end
+
+  subgraph F["Lane : Fournisseur"]
+    F1["Recevoir demande de garantie"]
+    F2{"Action acceptee ?"}
+    F3["Reparer ou remplacer la ressource"]
+    F4["Envoyer motif de refus"]
+  end
+
+  subgraph SYS["Lane : Systeme"]
+    S1["Creer action de garantie"]
+    S2["Notifier les acteurs concernes"]
+    S3["Mettre a jour statut de la ressource"]
+    S4["Journaliser decision"]
+  end
+
+  EVT_DEBUT --> R1 --> R2 --> R3
+  R3 -->|Non| R6 --> S4 --> EVT_FIN
+  R3 -->|Oui| R4 --> S1 --> R5 --> F1 --> F2
+  F2 -->|Oui| F3 --> S3 --> S2 --> S4 --> EVT_FIN
+  F2 -->|Non| F4 --> S2 --> S4 --> EVT_FIN

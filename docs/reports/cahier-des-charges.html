@@ -1,0 +1,1282 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Cahier des charges et spécifications — Système de gestion des ressources matérielles</title>
+<style>
+  :root{
+    --navy:#16284f; --navy2:#1f3a6d; --teal:#0f766e; --teal-l:#0d9488;
+    --ink:#1d2536; --muted:#5b6577; --line:#cdd5e0; --soft:#f1f5fb; --soft2:#e8eef6;
+    --amber:#b45309; --rose:#9f1239; --green:#15803d;
+  }
+  @page{ size:A4; }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    font-family:"Georgia","Times New Roman",serif; color:var(--ink);
+    font-size:11.2pt; line-height:1.62; counter-reset:chapter figure tableidx;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  p{ margin:0 0 3.2mm; text-align:justify; }
+  h1,h2,h3,h4{ font-family:"Segoe UI","Helvetica Neue",Arial,sans-serif; color:var(--navy); line-height:1.25; }
+  /* ---------- Cover ---------- */
+  .cover{ position:relative; height:262mm; overflow:hidden; color:#fff; break-after:page;
+          background:linear-gradient(135deg,#13233f 0%, #16284f 45%, #0f766e 130%); padding:20mm 18mm; }
+  .cover::after{ content:""; position:absolute; right:-60mm; top:-40mm; width:160mm; height:160mm;
+          background:radial-gradient(circle at center, rgba(255,255,255,.08), rgba(255,255,255,0) 70%); }
+  .cover .estab{ font-family:"Segoe UI",sans-serif; letter-spacing:.18em; text-transform:uppercase;
+          font-size:10.5pt; color:#bfe3df; font-weight:600; }
+  .cover .module{ font-family:"Segoe UI",sans-serif; margin-top:2mm; font-size:11pt; color:#cdd9f0; }
+  .cover .ribbon{ width:36mm; height:1.4mm; background:linear-gradient(90deg,#34d3c4,#bfe3df); margin:14mm 0 10mm; border-radius:2px; }
+  .cover .doctype{ font-family:"Segoe UI",sans-serif; font-size:13pt; font-weight:600; color:#9ad7d0; letter-spacing:.05em; }
+  .cover h1{ color:#fff; font-size:33pt; line-height:1.12; margin:5mm 0 0; max-width:150mm; }
+  .cover .subtitle{ font-size:15pt; color:#d8e2f3; margin-top:6mm; max-width:150mm; font-style:italic; font-family:"Georgia",serif;}
+  .cover .meta{ position:absolute; left:18mm; right:18mm; bottom:20mm;
+          display:grid; grid-template-columns:1fr 1fr; gap:5mm 10mm; font-family:"Segoe UI",sans-serif; }
+  .cover .meta .cell .k{ font-size:8.6pt; letter-spacing:.12em; text-transform:uppercase; color:#8fb6cf; }
+  .cover .meta .cell .v{ font-size:11.5pt; color:#fff; margin-top:.6mm; }
+  .cover .footer-line{ position:absolute; left:18mm; right:18mm; bottom:11mm; height:1px; background:rgba(255,255,255,.25); }
+  .cover .ver{ position:absolute; left:18mm; bottom:6mm; font-family:"Segoe UI",sans-serif; font-size:8.6pt; color:#9fb6d6; }
+
+  /* ---------- Chapters / headings ---------- */
+  h1.chapter{ counter-increment:chapter; counter-reset:section figure tableidx; break-before:page;
+          font-size:21pt; padding-bottom:3mm; margin:0 0 6mm; border-bottom:3px solid var(--teal); }
+  h1.chapter::before{ content:counter(chapter) ". "; color:var(--teal); }
+  h1.nonum{ counter-increment:none; }
+  h1.nonum::before{ content:""; }
+  h2{ counter-increment:section; font-size:14.5pt; margin:8mm 0 2.5mm; break-after:avoid; }
+  h2::before{ content:counter(chapter) "." counter(section) "  "; color:var(--teal); font-weight:700; }
+  h2.nonum{ counter-increment:none; } h2.nonum::before{ content:""; }
+  h3{ font-size:12pt; color:var(--teal); margin:5mm 0 2mm; break-after:avoid; font-family:"Segoe UI",sans-serif;}
+  h4{ font-size:10.6pt; color:var(--navy2); margin:4mm 0 1.5mm; break-after:avoid; }
+
+  /* ---------- Document sheet ---------- */
+  .sheet-title{ font-family:"Segoe UI",sans-serif; color:var(--navy); font-size:16pt; margin:0 0 5mm; }
+  table.meta{ width:100%; border-collapse:collapse; margin:0 0 6mm; font-size:10.3pt; }
+  table.meta td{ border:1px solid var(--line); padding:3mm 4mm; vertical-align:top; }
+  table.meta td.k{ background:var(--navy); color:#fff; width:42mm; font-family:"Segoe UI",sans-serif; font-weight:600; }
+
+  /* ---------- TOC ---------- */
+  .toc{ break-after:page; }
+  .toc h1{ break-before:auto; }
+  .toc ol{ list-style:none; margin:0; padding:0; }
+  .toc > ol > li{ font-family:"Segoe UI",sans-serif; font-weight:700; color:var(--navy); margin:3.2mm 0 1mm; font-size:11.4pt;}
+  .toc > ol > li > ol{ margin:1mm 0 0 7mm; }
+  .toc > ol > li > ol > li{ font-weight:400; color:var(--ink); font-size:10.4pt; margin:.7mm 0; font-family:"Georgia",serif;}
+  .toc .lead-dots{ color:var(--line); }
+
+  /* ---------- Generic content ---------- */
+  ul,ol{ margin:0 0 3.4mm; padding-left:6mm; }
+  li{ margin:.8mm 0; }
+  strong{ color:var(--navy); }
+  code,.mono{ font-family:"Consolas","JetBrains Mono",monospace; font-size:9.6pt; background:var(--soft2);
+          padding:.3mm 1.2mm; border-radius:2px; color:#143; }
+  .lead{ font-size:12pt; color:#33405a; }
+  figure{ break-inside:avoid; margin:6mm 0 7mm; text-align:center; }
+  figure.wide{ }
+  figcaption{ counter-increment:figure; font-size:9.4pt; color:var(--muted); font-style:italic; margin-top:2.5mm; }
+  figcaption::before{ content:"Figure " counter(chapter) "." counter(figure) " — "; font-weight:700; color:var(--navy); font-style:normal; }
+  .mermaid{ display:flex; justify-content:center; }
+  .mermaid svg{ max-width:100%; height:auto; }
+
+  table.data{ width:100%; border-collapse:collapse; font-size:9.9pt; margin:3mm 0 5mm; }
+  table.data caption{ caption-side:top; counter-increment:tableidx; text-align:left; font-size:9.4pt;
+          color:var(--muted); font-style:italic; margin-bottom:1.6mm; }
+  table.data caption::before{ content:"Tableau " counter(chapter) "." counter(tableidx) " — "; font-weight:700; color:var(--navy); font-style:normal; }
+  table.data th,table.data td{ border:1px solid var(--line); padding:2.4mm 3mm; text-align:left; vertical-align:top; }
+  table.data thead th{ background:var(--navy); color:#fff; font-family:"Segoe UI",sans-serif; font-weight:600; font-size:9.5pt; }
+  table.data tbody tr:nth-child(even) td{ background:var(--soft); }
+  table.data thead{ display:table-header-group; }
+  table.data.small{ font-size:9.2pt; }
+  td.c,th.c{ text-align:center; } td.r,th.r{ text-align:right; }
+
+  .pill{ display:inline-block; font-family:"Segoe UI",sans-serif; font-size:8.4pt; font-weight:700;
+         padding:.4mm 2mm; border-radius:3px; color:#fff; letter-spacing:.02em; }
+  .pill.fr{ background:var(--navy2); } .pill.nfr{ background:var(--teal); }
+  .pill.br{ background:var(--amber); } .pill.hi{ background:var(--rose); }
+  .pill.med{ background:#7c5e10; } .pill.low{ background:#475569; }
+
+  .callout{ break-inside:avoid; border:1px solid var(--line); border-left:4px solid var(--teal);
+            background:var(--soft); padding:3mm 4mm; margin:4mm 0; border-radius:0 3px 3px 0; font-size:10.3pt; }
+  .callout.rule{ border-left-color:var(--amber); background:#fdf6ec; }
+  .callout.warn{ border-left-color:var(--rose); background:#fdf0f3; }
+  .callout .ct{ font-family:"Segoe UI",sans-serif; font-weight:700; color:var(--navy); font-size:9.4pt;
+            text-transform:uppercase; letter-spacing:.08em; display:block; margin-bottom:1.2mm; }
+  .twocol{ column-count:2; column-gap:8mm; }
+  .kbd{ font-family:"Consolas",monospace; font-size:9pt; border:1px solid var(--line); border-bottom-width:2px;
+        border-radius:3px; padding:.2mm 1.4mm; background:#fff; }
+  .wire{ font-family:"Consolas","JetBrains Mono",monospace; font-size:8.7pt; line-height:1.35; white-space:pre;
+         background:#0e1b33; color:#d7e3f7; border-radius:4px; padding:4mm; overflow:hidden; break-inside:avoid; }
+  .small{ font-size:9.6pt; color:var(--muted); }
+  .center{ text-align:center; }
+  hr.soft{ border:none; border-top:1px solid var(--line); margin:6mm 0; }
+</style>
+</head>
+<body>
+
+<!-- ================= COVER ================= -->
+<section class="cover">
+  <div class="estab">Établissement d'enseignement supérieur — Ynov</div>
+  <div class="module">Module : Architecture Logicielle &amp; Développement &middot; Projet de fin de module</div>
+  <div class="ribbon"></div>
+  <div class="doctype">CAHIER DES CHARGES &amp; DOSSIER DE SPÉCIFICATIONS</div>
+  <h1>Système de gestion des ressources matérielles d'une faculté</h1>
+  <div class="subtitle">Analyse fonctionnelle, modélisation métier, exigences et spécifications d'un monolithe modulaire pour le cycle de vie des équipements (acquisition, inventaire, affectation, maintenance et garantie).</div>
+
+  <div class="meta">
+    <div class="cell"><div class="k">Document</div><div class="v">Spécifications fonctionnelles &amp; techniques</div></div>
+    <div class="cell"><div class="k">Projet</div><div class="v">Faculty Material Resources Management</div></div>
+    <div class="cell"><div class="k">Auteur</div><div class="v">Mohamed DOURAI</div></div>
+    <div class="cell"><div class="k">Encadrant</div><div class="v">Khalid El FAHSSI</div></div>
+    <div class="cell"><div class="k">Année universitaire</div><div class="v">2025 — 2026</div></div>
+    <div class="cell"><div class="k">Date</div><div class="v">Juin 2026</div></div>
+  </div>
+  <div class="footer-line"></div>
+  <div class="ver">Version 1.0 &middot; Document de référence pour la conception et la soutenance</div>
+</section>
+
+<!-- ================= FICHE DOCUMENT ================= -->
+<h1 class="chapter nonum">Fiche du document</h1>
+
+<table class="meta">
+  <tr><td class="k">Titre</td><td>Cahier des charges et dossier de spécifications — Système de gestion des ressources matérielles d'une faculté</td></tr>
+  <tr><td class="k">Type de document</td><td>Spécifications (analyse fonctionnelle, exigences, règles de gestion, processus métier, cas d'utilisation, maquettes, planning)</td></tr>
+  <tr><td class="k">Projet</td><td>Faculty Material Resources Management — monolithe modulaire trois tiers</td></tr>
+  <tr><td class="k">Dépôt du code source</td><td><a href="https://github.com/Mohamed-1954/material-resources-management" style="color:#0f766e; text-decoration:none;">https://github.com/Mohamed-1954/material-resources-management</a></td></tr>
+  <tr><td class="k">Périmètre</td><td>Expression des besoins, appels d'offres, offres fournisseurs, sélection, livraison, inventaire, affectation, maintenance, constats techniques et garantie</td></tr>
+  <tr><td class="k">Public visé</td><td>Jury académique, encadrant, équipe de développement, parties prenantes métier</td></tr>
+  <tr><td class="k">Statut</td><td>Validé — projet réalisé et fonctionnel (backend + frontend)</td></tr>
+  <tr><td class="k">Document associé</td><td>Rapport technique (conception et réalisation)</td></tr>
+</table>
+
+<h2 class="nonum">Historique des révisions</h2>
+<table class="data">
+  <thead><tr><th>Version</th><th>Date</th><th>Auteur</th><th>Nature des modifications</th></tr></thead>
+  <tbody>
+    <tr><td>0.1</td><td>Avril 2026</td><td>Équipe projet</td><td>Première rédaction : acteurs, processus métier, exigences brutes.</td></tr>
+    <tr><td>0.5</td><td>Mai 2026</td><td>Équipe projet</td><td>Consolidation des exigences fonctionnelles et non fonctionnelles, règles de gestion, diagrammes.</td></tr>
+    <tr><td>1.0</td><td>Juin 2026</td><td>Équipe projet</td><td>Version finale alignée sur la réalisation, revue de cohérence, maquettes et planning.</td></tr>
+  </tbody>
+</table>
+
+<h2 class="nonum">Convention de lecture</h2>
+<p>Les exigences fonctionnelles sont identifiées par le préfixe <span class="pill fr">FR-xx</span>, les exigences non fonctionnelles par <span class="pill nfr">NFR-xx</span> et les règles de gestion par <span class="pill br">BR-xx</span>. Les processus métier sont numérotés <code>BP-01</code> à <code>BP-06</code>. Toute référence à un identifiant (par exemple <code>FR-11</code> ou <code>BR-05</code>) renvoie au tableau correspondant, ce qui permet une traçabilité bidirectionnelle entre besoins, règles et processus.</p>
+
+<!-- ================= SOMMAIRE ================= -->
+<section class="toc">
+<h1 class="chapter nonum">Sommaire</h1>
+<ol>
+  <li>Résumé exécutif</li>
+  <li>Introduction générale
+    <ol><li>Contexte et problématique</li><li>Objectifs du document</li><li>Démarche et méthodologie</li><li>Structure du document</li></ol>
+  </li>
+  <li>Présentation et contexte métier
+    <ol><li>Le domaine : une faculté et ses équipements</li><li>Situation actuelle et limites</li><li>Parties prenantes</li><li>Apport attendu du système</li></ol>
+  </li>
+  <li>Périmètre et objectifs
+    <ol><li>Objectifs du système</li><li>Périmètre fonctionnel inclus</li><li>Éléments hors périmètre</li><li>Modules logiques</li></ol>
+  </li>
+  <li>Acteurs du système
+    <ol><li>Identification des acteurs</li><li>Description détaillée et responsabilités</li><li>Matrice acteurs / domaines</li></ol>
+  </li>
+  <li>Processus métier (BPMN)
+    <ol><li>BP-01 Collecte et validation des besoins</li><li>BP-02 Création d'un appel d'offre</li><li>BP-03 Soumission et évaluation des offres</li><li>BP-04 Livraison, inventaire et affectation</li><li>BP-05 Signalement de panne et maintenance</li><li>BP-06 Réparation ou remplacement sous garantie</li></ol>
+  </li>
+  <li>Exigences fonctionnelles
+    <ol><li>Tableau récapitulatif (FR-01 à FR-23)</li><li>Détail par domaine fonctionnel</li></ol>
+  </li>
+  <li>Exigences non fonctionnelles
+    <ol><li>Tableau des exigences (NFR-01 à NFR-10)</li><li>Critères d'acceptation qualité</li></ol>
+  </li>
+  <li>Règles de gestion
+    <ol><li>Catalogue des règles (BR-01 à BR-12)</li><li>Cycles de vie et statuts</li></ol>
+  </li>
+  <li>Diagramme des exigences et traçabilité
+    <ol><li>Diagramme des exigences</li><li>Matrice de traçabilité</li></ol>
+  </li>
+  <li>Modélisation des cas d'utilisation
+    <ol><li>Diagramme global</li><li>Vues par acteur</li><li>Descriptions détaillées</li></ol>
+  </li>
+  <li>Scénarios fonctionnels</li>
+  <li>Maquettes et wireframes</li>
+  <li>Contraintes, hypothèses et points à clarifier</li>
+  <li>Critères d'acceptation et livrables</li>
+  <li>Planification du projet
+    <ol><li>Découpage du travail (WBS)</li><li>Planning prévisionnel (Gantt)</li><li>Plan de versions</li></ol>
+  </li>
+  <li>Glossaire et langage métier</li>
+  <li>Conclusion</li>
+</ol>
+</section>
+
+<!-- ================= 1. RÉSUMÉ EXÉCUTIF ================= -->
+<h1 class="chapter">Résumé exécutif</h1>
+<p class="lead">Le présent document constitue le <strong>cahier des charges</strong> et le <strong>dossier de spécifications</strong> du système de gestion des ressources matérielles d'une faculté. Il formalise, de manière exhaustive et traçable, l'ensemble des besoins métier, des exigences fonctionnelles et non fonctionnelles, des règles de gestion et des processus qui gouvernent le cycle de vie des équipements matériels — depuis l'expression d'un besoin par un enseignant jusqu'aux décisions de réparation ou de remplacement sous garantie.</p>
+
+<p>Une faculté gère un parc important d'équipements informatiques (ordinateurs, imprimantes) répartis entre plusieurs départements. Aujourd'hui, l'acquisition, l'inventaire, l'affectation et la maintenance de ces équipements reposent souvent sur des outils hétérogènes et des échanges informels (courriels, tableurs, documents papier). Cette dispersion engendre des pertes de traçabilité, des délais d'acquisition mal maîtrisés, une visibilité limitée sur l'état réel du parc et une difficulté à justifier les décisions d'achat ou de garantie.</p>
+
+<p>Le système spécifié dans ce document répond à ce problème en centralisant, sur une plateforme web unique, l'intégralité des échanges entre les <strong>six acteurs</strong> du domaine : l'enseignant, le chef de département, le responsable des ressources, le fournisseur, le technicien de maintenance et l'administrateur système. Il couvre <strong>six processus métier</strong> (de la collecte des besoins à la garantie), <strong>vingt-trois exigences fonctionnelles</strong>, <strong>dix exigences non fonctionnelles</strong> et <strong>douze règles de gestion</strong> qui encadrent la validité des opérations (fenêtre de soumission des offres, sélection du moins-disant valide, unicité du code d'inventaire, obligation de constat pour les pannes sévères, validité de la garantie, etc.).</p>
+
+<p>Les spécifications sont accompagnées d'une modélisation rigoureuse : diagrammes de processus (BPMN), diagramme des exigences, cas d'utilisation global et par acteur, scénarios nominaux et maquettes textuelles. Un soin particulier est porté à la <strong>cohérence</strong> de l'ensemble : chaque exigence est rattachée à un ou plusieurs processus, chaque règle de gestion est matérialisée dans les diagrammes, et chaque acteur dispose d'un périmètre fonctionnel clairement délimité par un contrôle d'accès basé sur les rôles.</p>
+
+<p>Ce document sert de <strong>référence contractuelle</strong> pour la conception, la réalisation et la recette du projet. Il est complété par un <em>rapport technique</em> distinct, consacré à l'architecture et à la réalisation logicielle, qui démontre que les exigences énoncées ici ont effectivement été couvertes par une application fonctionnelle.</p>
+
+<!-- ================= 2. INTRODUCTION ================= -->
+<h1 class="chapter">Introduction générale</h1>
+
+<h2>Contexte et problématique</h2>
+<p>La gestion du parc matériel constitue, pour tout établissement d'enseignement supérieur, une activité transverse et stratégique. Une faculté acquiert, déploie et entretient en permanence des équipements — principalement des ordinateurs et des imprimantes — destinés à ses enseignants et à ses départements. Le cycle de vie de chaque équipement est long et jalonné de nombreuses étapes : un besoin est exprimé, validé puis consolidé ; un appel d'offre est publié ; des fournisseurs soumettent des offres ; une offre est sélectionnée selon des critères de conformité et de prix ; le matériel est livré, inventorié, puis affecté ; il peut tomber en panne, faire l'objet d'une intervention de maintenance, donner lieu à un constat technique, et déclencher une demande de réparation ou de remplacement auprès du fournisseur si la garantie est encore valide.</p>
+
+<p>En l'absence d'un système d'information dédié, ces étapes sont prises en charge par une mosaïque d'outils : courriers électroniques pour les demandes, tableurs pour l'inventaire, documents bureautiques pour les appels d'offres, échanges téléphoniques pour la maintenance. Cette fragmentation produit plusieurs symptômes récurrents : la <strong>traçabilité</strong> des décisions est faible (qui a éliminé tel fournisseur, et pour quel motif ?) ; la <strong>cohérence</strong> des données est fragile (un même équipement peut figurer sous deux références différentes) ; la <strong>visibilité</strong> sur l'état du parc est partielle ; et la <strong>responsabilité</strong> de chaque acteur est mal délimitée. Il devient alors difficile de justifier un achat, de prouver qu'une garantie était valide au moment d'une demande, ou simplement de savoir quel enseignant détient quel matériel.</p>
+
+<p>La problématique centrale du projet est donc la suivante : <em>comment concevoir un système d'information unique, sécurisé et traçable, qui orchestre l'ensemble du cycle de vie des ressources matérielles, tout en respectant les rôles et les responsabilités propres à chaque acteur de la faculté ?</em></p>
+
+<h2>Objectifs du document</h2>
+<p>Ce cahier des charges poursuit quatre objectifs complémentaires :</p>
+<ul>
+  <li><strong>Comprendre et formaliser le besoin métier</strong> : décrire le domaine, ses acteurs et ses processus de manière non ambiguë, dans un vocabulaire partagé.</li>
+  <li><strong>Spécifier les exigences</strong> : énumérer de façon exhaustive et priorisée ce que le système doit faire (exigences fonctionnelles), comment il doit se comporter (exigences non fonctionnelles) et quelles contraintes métier il doit respecter (règles de gestion).</li>
+  <li><strong>Modéliser</strong> : illustrer les processus, les exigences et les interactions par des diagrammes normalisés (BPMN, diagramme des exigences, cas d'utilisation), afin de servir de support à la conception et à la communication.</li>
+  <li><strong>Établir un référentiel de recette</strong> : fournir des critères d'acceptation mesurables permettant de vérifier, en fin de projet, que la solution livrée est conforme aux attentes.</li>
+</ul>
+
+<h2>Démarche et méthodologie</h2>
+<p>La démarche adoptée est une démarche d'ingénierie des exigences classique, enrichie d'une approche pilotée par le domaine (<em>Domain-Driven Design</em>) pour la définition du vocabulaire métier. Elle s'articule en plusieurs temps : recueil et analyse du besoin, identification des acteurs et des processus, formalisation des exigences et des règles, modélisation UML/BPMN, puis revue de cohérence transversale. Le projet a ensuite été réalisé de manière incrémentale, par <strong>versions successives (R0 à R6)</strong>, chaque version livrant un sous-ensemble cohérent et testé de fonctionnalités. Cette organisation, détaillée au chapitre consacré à la planification, a permis de valider tôt les choix structurants (authentification, contrôle d'accès) avant d'aborder les fonctionnalités métier les plus riches (offres, maintenance, garantie).</p>
+
+<div class="callout">
+  <span class="ct">Positionnement académique</span>
+  Ce projet s'inscrit dans le module d'architecture logicielle. Au-delà de la simple production d'une application, l'enjeu pédagogique est de démontrer une <strong>chaîne complète et cohérente</strong> : de l'analyse du besoin à la modélisation, puis de la modélisation à une réalisation logicielle effective. Le présent document couvre la première moitié de cette chaîne (le « quoi ») ; le rapport technique couvre la seconde (le « comment »).
+</div>
+
+<h2>Structure du document</h2>
+<p>Après ce préambule, le document présente le contexte métier et les parties prenantes (chapitre 3), délimite le périmètre et les objectifs (chapitre 4), puis identifie les acteurs (chapitre 5). Les chapitres suivants constituent le cœur des spécifications : les processus métier modélisés en BPMN (chapitre 6), les exigences fonctionnelles (chapitre 7), non fonctionnelles (chapitre 8) et les règles de gestion (chapitre 9). La traçabilité est assurée par le diagramme des exigences et la matrice associée (chapitre 10). La modélisation se poursuit par les cas d'utilisation (chapitre 11), les scénarios (chapitre 12) et les maquettes (chapitre 13). Le document se referme sur les contraintes et hypothèses (chapitre 14), les critères d'acceptation (chapitre 15), la planification (chapitre 16), un glossaire (chapitre 17) et une conclusion (chapitre 18).</p>
+
+<!-- ================= 3. CONTEXTE MÉTIER ================= -->
+<h1 class="chapter">Présentation et contexte métier</h1>
+
+<h2>Le domaine : une faculté et ses équipements</h2>
+<p>Le domaine d'étude est celui d'une faculté universitaire structurée en <strong>départements</strong> (informatique, mathématiques, physique, électronique, mécanique, administration, etc.). Chaque département regroupe des enseignants et dispose, le cas échéant, d'un budget annuel destiné notamment à l'équipement. Les ressources matérielles considérées sont essentiellement de deux natures : les <strong>ordinateurs</strong> (caractérisés par leur processeur, leur mémoire vive, leur disque et leur écran) et les <strong>imprimantes</strong> (caractérisées par leur vitesse d'impression et leur résolution). Chaque ressource possède un cycle de vie propre : disponible, affectée, en maintenance, envoyée au fournisseur, remplacée, réformée ou perdue.</p>
+
+<p>Le matériel n'est pas acheté au fil de l'eau : il transite par un mécanisme d'<strong>appel d'offre</strong>. Le responsable des ressources regroupe les besoins validés, publie un appel d'offre encadré par une date de début et une date de fin, et reçoit des <strong>offres</strong> de la part de fournisseurs externes. Chaque offre détaille, par ligne, une marque, un prix unitaire, une quantité, une durée de garantie et une date de livraison prévisionnelle. Après élimination des offres non conformes ou des fournisseurs inscrits sur liste noire, l'offre valide la moins disante est retenue et le matériel est livré, puis intégré à l'inventaire.</p>
+
+<h2>Situation actuelle et limites</h2>
+<p>Avant l'introduction du système, le processus présente plusieurs faiblesses structurelles :</p>
+<table class="data">
+  <caption>Limites de la situation actuelle et réponses apportées par le système.</caption>
+  <thead><tr><th style="width:34%">Limite observée</th><th>Conséquence</th><th>Réponse du système</th></tr></thead>
+  <tbody>
+    <tr><td>Demandes de besoins dispersées (courriels, papier)</td><td>Pertes de demandes, absence de consolidation départementale</td><td>Formulaire de besoin structuré et circuit de validation départemental</td></tr>
+    <tr><td>Appels d'offres gérés hors système</td><td>Difficulté à contrôler la fenêtre de soumission et l'égalité de traitement</td><td>Appel d'offre daté, statut contrôlé, soumission limitée à la période active</td></tr>
+    <tr><td>Sélection des offres peu formalisée</td><td>Décisions d'achat difficiles à justifier</td><td>Règle du moins-disant valide, motifs d'élimination obligatoires, journal d'audit</td></tr>
+    <tr><td>Inventaire en tableur</td><td>Doublons, codes non uniques, désynchronisation</td><td>Code d'inventaire unique généré automatiquement à la livraison</td></tr>
+    <tr><td>Affectations non historisées</td><td>Impossible de savoir qui détenait quoi et quand</td><td>Historique complet des affectations (désactivation au lieu de suppression)</td></tr>
+    <tr><td>Maintenance informelle</td><td>Pannes non tracées, garanties parfois oubliées</td><td>Cycle de panne formalisé, constat technique, contrôle de validité de garantie</td></tr>
+  </tbody>
+</table>
+
+<h2>Parties prenantes</h2>
+<p>Les parties prenantes du projet se répartissent en trois cercles. Le <strong>cercle métier</strong> rassemble les utilisateurs finaux : enseignants, chefs de département, responsable des ressources et techniciens de maintenance. Le <strong>cercle externe</strong> est constitué des fournisseurs, partenaires économiques qui interagissent avec la faculté sans en faire partie. Le <strong>cercle technique</strong> comprend l'administrateur système et l'équipe de réalisation, garants de la sécurité et du bon fonctionnement de la plateforme. La satisfaction de ces parties prenantes se traduit directement dans les exigences : ergonomie pour les utilisateurs non techniques, confidentialité des offres pour les fournisseurs, traçabilité et contrôle d'accès pour les responsables et l'administrateur.</p>
+
+<h2>Apport attendu du système</h2>
+<p>Le système doit apporter une <strong>chaîne unique, continue et auditable</strong> reliant l'expression d'un besoin à la décision de garantie. Concrètement, il doit permettre : de centraliser et tracer toutes les communications entre acteurs ; de garantir que chaque acteur n'accède qu'aux fonctions qui le concernent ; d'assurer l'intégrité des données métier par des contraintes de statut, de dates et de cardinalité ; et de conserver une mémoire des décisions importantes afin de pouvoir les justifier a posteriori. La valeur du système réside donc autant dans la <strong>fluidité</strong> qu'il apporte aux échanges que dans la <strong>confiance</strong> qu'il instaure par la traçabilité.</p>
+
+<!-- ================= 4. PÉRIMÈTRE & OBJECTIFS ================= -->
+<h1 class="chapter">Périmètre et objectifs</h1>
+
+<h2>Objectifs du système</h2>
+<p>Les objectifs du système se déclinent en objectifs métier et en objectifs de qualité. Sur le plan métier, le système vise à : dématérialiser le circuit des besoins ; encadrer les appels d'offres et la sélection des fournisseurs ; tenir un inventaire fiable et unique du parc ; gérer les affectations avec historique ; et orchestrer la maintenance et les garanties. Sur le plan de la qualité, il vise la sécurité des accès, la traçabilité des décisions, l'intégrité des données, la performance des consultations courantes et l'ergonomie pour des utilisateurs non techniques.</p>
+
+<table class="data">
+  <caption>Objectifs principaux et indicateurs de réussite associés.</caption>
+  <thead><tr><th style="width:30%">Objectif</th><th>Description</th><th>Indicateur de réussite</th></tr></thead>
+  <tbody>
+    <tr><td>Centraliser le cycle de vie</td><td>Un point d'entrée unique du besoin à la garantie</td><td>Les six processus métier sont réalisables de bout en bout dans l'application</td></tr>
+    <tr><td>Sécuriser et cloisonner</td><td>Authentification obligatoire et accès par rôle</td><td>Chaque rôle ne voit que ses fonctions ; aucune action privilégiée auto-attribuable</td></tr>
+    <tr><td>Tracer les décisions</td><td>Journaliser les actions sensibles</td><td>Toute décision critique (élimination, sélection, garantie…) est consignée</td></tr>
+    <tr><td>Fiabiliser l'inventaire</td><td>Identité unique de chaque ressource</td><td>Code d'inventaire unique généré à la livraison, zéro doublon</td></tr>
+    <tr><td>Préserver l'historique</td><td>Ne pas perdre l'information lors des changements</td><td>Affectations et statuts conservés ; suppression logique privilégiée</td></tr>
+  </tbody>
+</table>
+
+<h2>Périmètre fonctionnel inclus</h2>
+<p>Le périmètre couvert par les présentes spécifications comprend l'ensemble des fonctionnalités nécessaires aux six processus métier :</p>
+<ul>
+  <li>l'<strong>authentification</strong> et le contrôle d'accès basé sur les rôles ;</li>
+  <li>la <strong>gestion des utilisateurs, des rôles et des départements</strong> ;</li>
+  <li>l'<strong>expression et la validation des besoins</strong> matériels par département ;</li>
+  <li>la <strong>création, la publication et le suivi des appels d'offres</strong> ;</li>
+  <li>l'<strong>inscription des fournisseurs</strong>, la soumission, l'évaluation et la sélection des <strong>offres</strong> ;</li>
+  <li>l'<strong>enregistrement des livraisons</strong>, la tenue de l'<strong>inventaire</strong> et l'<strong>affectation</strong> des ressources ;</li>
+  <li>le <strong>signalement des pannes</strong>, les <strong>interventions de maintenance</strong>, les <strong>constats techniques</strong> et les <strong>actions de garantie</strong> ;</li>
+  <li>les <strong>notifications</strong> internes et l'<strong>audit</strong> des opérations importantes.</li>
+</ul>
+
+<h2>Éléments hors périmètre</h2>
+<p>Afin de cadrer le projet dans un volume réaliste pour un travail académique, certains aspects sont explicitement écartés de la version courante. Ils pourront faire l'objet d'évolutions ultérieures :</p>
+<ul>
+  <li>le <strong>contrôle budgétaire</strong> automatique par département (blocage d'un besoin dépassant le budget) ;</li>
+  <li>la gestion documentaire administrative des fournisseurs (pièces justificatives à l'inscription) ;</li>
+  <li>les canaux de notification <strong>externes</strong> (courriel, SMS) — seules les notifications internes sont prévues ;</li>
+  <li>l'intégration à un système comptable ou à un annuaire d'entreprise (LDAP) externe ;</li>
+  <li>la gestion de types de matériel autres que les ordinateurs et les imprimantes.</li>
+</ul>
+
+<h2>Modules logiques</h2>
+<p>Pour structurer le besoin, le système est découpé en <strong>modules logiques</strong> cohérents, qui serviront ensuite de fil conducteur à l'architecture. Chaque module correspond à un domaine fonctionnel autonome.</p>
+<table class="data small">
+  <caption>Modules logiques du système et leur responsabilité.</caption>
+  <thead><tr><th>Module</th><th>Responsabilité fonctionnelle</th></tr></thead>
+  <tbody>
+    <tr><td>Authentification &amp; sécurité</td><td>Connexion, sessions, contrôle d'accès par rôle</td></tr>
+    <tr><td>Utilisateurs &amp; rôles</td><td>Comptes, attribution de rôles et de droits</td></tr>
+    <tr><td>Départements</td><td>Référentiel des départements et de leurs membres</td></tr>
+    <tr><td>Besoins</td><td>Expression, consolidation et validation départementale des besoins</td></tr>
+    <tr><td>Appels d'offres</td><td>Création, lignes, publication et cycle de vie de l'appel</td></tr>
+    <tr><td>Fournisseurs</td><td>Inscription, profil, liste noire</td></tr>
+    <tr><td>Offres</td><td>Soumission, évaluation, élimination, sélection</td></tr>
+    <tr><td>Ressources &amp; inventaire</td><td>Livraison, codes d'inventaire, spécifications</td></tr>
+    <tr><td>Affectations</td><td>Attribution à un enseignant ou un département, historique</td></tr>
+    <tr><td>Maintenance</td><td>Pannes, interventions, constats, garanties</td></tr>
+    <tr><td>Notifications</td><td>Messages internes et alertes</td></tr>
+    <tr><td>Audit &amp; traçabilité</td><td>Journalisation des opérations sensibles</td></tr>
+  </tbody>
+</table>
+
+<!-- ================= 5. ACTEURS ================= -->
+<h1 class="chapter">Acteurs du système</h1>
+<p>Le système met en relation six acteurs, dont cinq internes à la faculté et un externe (le fournisseur). Chaque acteur correspond à un rôle applicatif portant un ensemble de droits précis. Le cloisonnement des rôles est une exigence structurante : il garantit qu'aucun acteur ne peut accéder à des fonctions qui ne le concernent pas, et qu'aucun rôle privilégié ne peut être auto-attribué lors d'une inscription publique.</p>
+
+<h2>Identification des acteurs</h2>
+<table class="data">
+  <caption>Acteurs du système et code de rôle applicatif associé.</caption>
+  <thead><tr><th>Acteur</th><th>Code de rôle</th><th>Nature</th><th>Point d'entrée principal</th></tr></thead>
+  <tbody>
+    <tr><td>Responsable des ressources</td><td><code>RESOURCE_MANAGER</code></td><td>Interne</td><td>Acquisition, inventaire, garantie</td></tr>
+    <tr><td>Chef de département</td><td><code>DEPARTMENT_HEAD</code></td><td>Interne</td><td>Validation des besoins</td></tr>
+    <tr><td>Enseignant</td><td><code>TEACHER</code></td><td>Interne</td><td>Besoins et signalement de pannes</td></tr>
+    <tr><td>Fournisseur</td><td><code>SUPPLIER</code></td><td>Externe</td><td>Appels d'offres et offres</td></tr>
+    <tr><td>Technicien de maintenance</td><td><code>MAINTENANCE_TECHNICIAN</code></td><td>Interne</td><td>Interventions et constats</td></tr>
+    <tr><td>Administrateur système</td><td><code>ADMIN</code></td><td>Interne (technique)</td><td>Administration et sécurité</td></tr>
+  </tbody>
+</table>
+
+<h2>Description détaillée et responsabilités</h2>
+
+<h3>Responsable des ressources</h3>
+<p>Acteur central de la chaîne d'acquisition, il pilote l'ensemble du flux aval. Il regroupe les besoins validés, crée et publie les appels d'offres, évalue les offres reçues, élimine les fournisseurs non conformes (avec motif), sélectionne l'offre valide la moins disante, enregistre les livraisons, attribue les codes d'inventaire, affecte les ressources et décide des actions de garantie (réparation ou remplacement). Il dispose également d'un droit de consultation du journal d'audit.</p>
+
+<h3>Chef de département</h3>
+<p>Responsable de la consolidation des besoins de son département, et de son département uniquement. Il sollicite les enseignants, consulte les besoins reçus, demande des corrections, organise la concertation, valide les besoins consolidés et les transmet au responsable des ressources. Il établit également la liste prévisionnelle d'affectation. Son périmètre de visibilité est strictement limité à son département.</p>
+
+<h3>Enseignant</h3>
+<p>Utilisateur final des ressources. Il soumet des besoins matériels en précisant le type d'équipement, ses caractéristiques techniques et une justification ; il suit l'état de ses demandes ; il consulte les ressources qui lui sont affectées ; et il signale les pannes des équipements dont il a la charge. Il ne peut signaler une panne que sur une ressource qui lui est effectivement affectée ou affectée à son département.</p>
+
+<h3>Fournisseur</h3>
+<p>Société externe proposant et livrant du matériel. Le fournisseur crée lui-même son compte société (seul rôle dont l'auto-inscription est autorisée), consulte les appels d'offres <em>actifs</em>, soumet des offres détaillées, met à jour son profil et reçoit les notifications de décision (acceptation ou rejet). Il ne voit jamais les offres concurrentes : la confidentialité commerciale est une exigence forte.</p>
+
+<h3>Technicien de maintenance</h3>
+<p>Membre du service de maintenance. Il prend en charge les pannes qui lui sont assignées, démarre et clôture les interventions, qualifie une panne comme sévère le cas échéant, et rédige un constat technique (explication, date d'apparition, fréquence, type) pour les pannes sévères. Le constat constitue le point de passage obligatoire vers le circuit de garantie.</p>
+
+<h3>Administrateur système</h3>
+<p>Acteur technique justifié par les exigences de sécurité. Il gère les comptes, attribue les rôles, administre le référentiel des départements, consulte le journal d'audit et paramètre la sécurité. Il dispose, par construction, de l'ensemble des droits du système.</p>
+
+<h2>Matrice acteurs / domaines</h2>
+<p>La matrice ci-dessous résume, à gros grain, le niveau d'intervention de chaque acteur sur les grands domaines fonctionnels. La légende est la suivante : <strong>G</strong> = gère (création/décision), <strong>P</strong> = participe (saisie/contribution), <strong>C</strong> = consulte, <strong>—</strong> = aucun accès.</p>
+<table class="data small">
+  <caption>Matrice de responsabilité acteurs × domaines fonctionnels.</caption>
+  <thead><tr><th>Domaine</th><th class="c">Resp.</th><th class="c">Chef dépt.</th><th class="c">Enseignant</th><th class="c">Fournisseur</th><th class="c">Technicien</th><th class="c">Admin</th></tr></thead>
+  <tbody>
+    <tr><td>Utilisateurs &amp; rôles</td><td class="c">—</td><td class="c">—</td><td class="c">—</td><td class="c">—</td><td class="c">—</td><td class="c">G</td></tr>
+    <tr><td>Départements</td><td class="c">C</td><td class="c">P</td><td class="c">—</td><td class="c">—</td><td class="c">—</td><td class="c">G</td></tr>
+    <tr><td>Besoins</td><td class="c">C</td><td class="c">G</td><td class="c">P</td><td class="c">—</td><td class="c">—</td><td class="c">C</td></tr>
+    <tr><td>Appels d'offres</td><td class="c">G</td><td class="c">—</td><td class="c">—</td><td class="c">C</td><td class="c">—</td><td class="c">C</td></tr>
+    <tr><td>Offres</td><td class="c">G</td><td class="c">—</td><td class="c">—</td><td class="c">P</td><td class="c">—</td><td class="c">C</td></tr>
+    <tr><td>Fournisseurs</td><td class="c">G</td><td class="c">—</td><td class="c">—</td><td class="c">P</td><td class="c">—</td><td class="c">C</td></tr>
+    <tr><td>Inventaire</td><td class="c">G</td><td class="c">C</td><td class="c">C</td><td class="c">—</td><td class="c">C</td><td class="c">C</td></tr>
+    <tr><td>Affectations</td><td class="c">G</td><td class="c">C</td><td class="c">C</td><td class="c">—</td><td class="c">—</td><td class="c">C</td></tr>
+    <tr><td>Maintenance</td><td class="c">P</td><td class="c">C</td><td class="c">P</td><td class="c">P</td><td class="c">G</td><td class="c">C</td></tr>
+    <tr><td>Garantie</td><td class="c">G</td><td class="c">—</td><td class="c">—</td><td class="c">P</td><td class="c">C</td><td class="c">C</td></tr>
+    <tr><td>Audit</td><td class="c">C</td><td class="c">—</td><td class="c">—</td><td class="c">—</td><td class="c">—</td><td class="c">G</td></tr>
+  </tbody>
+</table>
+
+<!-- ================= 6. PROCESSUS MÉTIER ================= -->
+<h1 class="chapter">Processus métier (BPMN)</h1>
+<p>Six processus métier structurent le domaine. Ils sont identifiés <code>BP-01</code> à <code>BP-06</code> et modélisés sous forme d'organigrammes à couloirs (inspirés de la notation BPMN), où chaque couloir représente la responsabilité d'un acteur ou du système. Cette modélisation rend explicites les points de décision, les boucles de correction et les passages de responsabilité entre acteurs. Les processus s'enchaînent : la sortie de l'un alimente l'entrée du suivant, formant la chaîne continue du cycle de vie des ressources.</p>
+
+<figure>
+<pre class="mermaid">
+flowchart TB
+  D((Début))
+  subgraph EN["Couloir : Enseignant"]
+    E1["Recevoir la demande de besoins"]
+    E2["Saisir le besoin matériel"]
+    E3["Soumettre le besoin"]
+    E4["Recevoir la notification de décision"]
+  end
+  subgraph CD["Couloir : Chef de département"]
+    C1["Demander les besoins aux enseignants"]
+    C2["Consulter les besoins reçus"]
+    C3{"Besoin clair et pertinent ?"}
+    C4["Demander une correction"]
+    C5["Organiser la concertation et les ajustements"]
+    C6["Valider les besoins consolidés"]
+    C7["Transmettre au responsable"]
+    C8["Envoyer la liste prévisionnelle d'affectation"]
+  end
+  subgraph RR["Couloir : Responsable ressources"]
+    R1["Recevoir les besoins validés"]
+    R2["Classer les besoins pour un futur appel d'offre"]
+  end
+  D --> C1 --> E1 --> E2 --> E3 --> C2 --> C3
+  C3 -->|Non| C4 --> E4 --> E2
+  C3 -->|Oui| C5 --> C6 --> C7 --> R1 --> R2 --> F((Fin))
+  C6 --> C8 --> R1
+</pre>
+<figcaption>BP-01 — Collecte et validation des besoins.</figcaption>
+</figure>
+
+<h2>BP-01 — Collecte et validation des besoins</h2>
+<p>Ce processus transforme des besoins individuels d'enseignants en un ensemble de besoins départementaux validés, prêts à être consolidés dans un appel d'offre. Le chef de département sollicite les enseignants ; chaque enseignant saisit puis soumet son besoin. Le chef examine la pertinence de chaque besoin : s'il est incomplet ou non pertinent, il demande une correction (boucle de retour vers l'enseignant) ; s'il est valable, il l'intègre à une phase de concertation et d'ajustement, valide l'ensemble consolidé, puis le transmet au responsable des ressources accompagné d'une liste prévisionnelle d'affectation. Ce processus matérialise les exigences <span class="pill fr">FR-04</span>, <span class="pill fr">FR-05</span> et <span class="pill fr">FR-06</span>.</p>
+
+<figure>
+<pre class="mermaid">
+flowchart TB
+  D((Début))
+  subgraph RR["Couloir : Responsable ressources"]
+    R1["Regrouper les besoins validés"]
+    R2["Créer les lignes de l'appel d'offre"]
+    R3["Définir la date de début et la date de fin"]
+    R4{"Dates valides ?"}
+    R5["Corriger les dates"]
+    R6["Publier l'appel d'offre"]
+    R7["Notifier les fournisseurs inscrits"]
+  end
+  subgraph SYS["Couloir : Système"]
+    S1["Vérifier la cohérence des lignes"]
+    S2["Passer le statut à Publié"]
+    S3["Rendre l'appel visible pendant la période active"]
+  end
+  D --> R1 --> R2 --> S1 --> R3 --> R4
+  R4 -->|Non| R5 --> R3
+  R4 -->|Oui| R6 --> S2 --> S3 --> R7 --> F((Fin))
+</pre>
+<figcaption>BP-02 — Création et publication d'un appel d'offre.</figcaption>
+</figure>
+
+<h2>BP-02 — Création d'un appel d'offre</h2>
+<p>Le responsable regroupe les besoins validés en lignes d'appel d'offre, puis définit une <strong>date de début</strong> et une <strong>date de fin</strong>. Le système vérifie la cohérence des lignes et impose la règle <span class="pill br">BR-01</span> : un appel d'offre possède nécessairement une fenêtre temporelle (début antérieur à la fin). Si les dates sont invalides, une boucle de correction est déclenchée. Une fois publié, l'appel d'offre passe au statut <em>Publié</em> et n'est visible — et ouvert à la soumission — que pendant sa période active. Les fournisseurs inscrits sont alors notifiés. Ce processus couvre l'exigence <span class="pill fr">FR-07</span>.</p>
+
+<figure>
+<pre class="mermaid">
+flowchart TB
+  D((Début))
+  subgraph F["Couloir : Fournisseur"]
+    F1["Consulter les appels d'offres actifs"]
+    F2["Saisir l'offre : marque, prix, garantie, livraison"]
+    F3["Soumettre l'offre"]
+    F4["Recevoir la notification d'acceptation ou de rejet"]
+  end
+  subgraph SYS["Couloir : Système"]
+    S1{"Appel d'offre actif ?"}
+    S2["Enregistrer l'offre"]
+    S3["Bloquer la soumission"]
+    S4["Calculer le total et classer les offres valides"]
+  end
+  subgraph RR["Couloir : Responsable ressources"]
+    R1["Consulter les offres reçues"]
+    R2{"Fournisseur en liste noire ou non conforme ?"}
+    R3["Éliminer avec motif"]
+    R4["Comparer les offres valides"]
+    R5["Sélectionner le moins-disant valide"]
+    R6["Notifier le fournisseur accepté"]
+    R7["Notifier les fournisseurs rejetés"]
+  end
+  D --> F1 --> F2 --> F3 --> S1
+  S1 -->|Non| S3 --> F4 --> Fin((Fin))
+  S1 -->|Oui| S2 --> R1 --> R2
+  R2 -->|Oui| R3 --> F4
+  R2 -->|Non| S4 --> R4 --> R5 --> R6 --> R7 --> F4
+</pre>
+<figcaption>BP-03 — Soumission et évaluation des offres.</figcaption>
+</figure>
+
+<h2>BP-03 — Soumission et évaluation des offres</h2>
+<p>Cœur de la chaîne d'acquisition, ce processus combine la participation des fournisseurs et la décision du responsable. Un fournisseur ne peut soumettre une offre que pendant la période active de l'appel (<span class="pill br">BR-02</span>) ; toute soumission hors fenêtre est bloquée par le système. Le responsable consulte les offres, élimine les fournisseurs en liste noire ou non conformes <strong>en indiquant un motif</strong> (<span class="pill br">BR-03</span>, <span class="pill br">BR-04</span>), puis sélectionne l'<strong>offre valide la moins disante</strong> (<span class="pill br">BR-05</span>). Le fournisseur retenu et les fournisseurs rejetés sont notifiés. Ce processus porte les exigences <span class="pill fr">FR-08</span> à <span class="pill fr">FR-12</span>.</p>
+
+<figure>
+<pre class="mermaid">
+flowchart TB
+  D((Début))
+  subgraph F["Couloir : Fournisseur"]
+    F1["Livrer les ressources"]
+    F2["Fournir les informations de société si nouveau"]
+  end
+  subgraph RR["Couloir : Responsable ressources"]
+    R1["Réceptionner la livraison"]
+    R2{"Fournisseur complet dans le système ?"}
+    R3["Compléter lieu, adresse, site web, gérant"]
+    R4["Vérifier les ressources livrées"]
+    R5["Attribuer un numéro d'inventaire / code-barres"]
+    R6["Enregistrer les ressources en inventaire"]
+    R7{"Affectation immédiate ?"}
+    R8["Affecter à un enseignant ou un département"]
+    R9["Notifier les bénéficiaires"]
+  end
+  subgraph SYS["Couloir : Système"]
+    S1["Contrôler l'unicité du code d'inventaire"]
+    S2["Mettre le statut : disponible ou affectée"]
+    S3["Journaliser la livraison et l'affectation"]
+  end
+  D --> F1 --> R1 --> R2
+  R2 -->|Non| F2 --> R3 --> R4
+  R2 -->|Oui| R4
+  R4 --> R5 --> S1 --> R6 --> R7
+  R7 -->|Oui| R8 --> S2 --> S3 --> R9 --> Fin((Fin))
+  R7 -->|Non| S2 --> S3 --> Fin
+</pre>
+<figcaption>BP-04 — Livraison, inventaire et affectation.</figcaption>
+</figure>
+
+<h2>BP-04 — Livraison, inventaire et affectation</h2>
+<p>À l'issue de l'attribution, le fournisseur livre les ressources. Le responsable réceptionne la livraison, complète si nécessaire les informations du fournisseur, vérifie les équipements, puis leur attribue un <strong>code d'inventaire unique</strong> dont le système contrôle l'unicité (<span class="pill br">BR-06</span>). Les ressources sont enregistrées en inventaire avec leurs spécifications (ordinateur ou imprimante). Le responsable peut affecter immédiatement une ressource à un enseignant ou à un département (<span class="pill br">BR-07</span>), ou la laisser disponible. Toute affectation est journalisée et notifiée. Ce processus couvre <span class="pill fr">FR-13</span>, <span class="pill fr">FR-14</span> et <span class="pill fr">FR-16</span>.</p>
+
+<figure>
+<pre class="mermaid">
+flowchart TB
+  D((Début))
+  subgraph E["Couloir : Enseignant"]
+    E1["Identifier la ressource en panne"]
+    E2["Saisir le signalement"]
+    E3["Envoyer au service maintenance"]
+    E4["Recevoir la notification de suivi"]
+  end
+  subgraph TM["Couloir : Technicien de maintenance"]
+    T1["Recevoir la panne assignée"]
+    T2["Intervenir au département"]
+    T3{"Réparation immédiate possible ?"}
+    T4["Réparer et clôturer l'intervention"]
+    T5{"Panne sévère ?"}
+    T6["Rédiger le constat technique"]
+    T7["Transmettre le constat au responsable"]
+  end
+  subgraph SYS["Couloir : Système"]
+    S1["Créer le ticket de panne"]
+    S2["Notifier le technicien"]
+    S3["Journaliser l'intervention"]
+  end
+  D --> E1 --> E2 --> E3 --> S1 --> S2 --> T1 --> T2 --> T3
+  T3 -->|Oui| T4 --> S3 --> E4 --> Fin((Fin))
+  T3 -->|Non| T5
+  T5 -->|Non| S3
+  T5 -->|Oui| T6 --> T7 --> S3
+</pre>
+<figcaption>BP-05 — Signalement de panne et maintenance.</figcaption>
+</figure>
+
+<h2>BP-05 — Signalement de panne et maintenance</h2>
+<p>L'enseignant identifie une ressource en panne (parmi celles qui lui sont affectées) et saisit un signalement transmis au service de maintenance. Le système crée un ticket et notifie le technicien. Celui-ci intervient : si la réparation est immédiate, il clôture l'intervention ; sinon, il évalue la sévérité. Une panne <strong>sévère</strong> impose la rédaction d'un <strong>constat technique</strong> (<span class="pill br">BR-08</span>) qui sera transmis au responsable et ouvrira le circuit de garantie. Ce processus couvre <span class="pill fr">FR-18</span>, <span class="pill fr">FR-19</span> et <span class="pill fr">FR-20</span>.</p>
+
+<figure>
+<pre class="mermaid">
+flowchart TB
+  D((Début))
+  subgraph RR["Couloir : Responsable ressources"]
+    R1["Recevoir le constat technique sévère"]
+    R2["Vérifier la ressource et la garantie"]
+    R3{"Garantie encore valide ?"}
+    R4["Choisir : réparation ou remplacement"]
+    R5["Envoyer la demande au fournisseur avec constat"]
+    R6["Clôturer sans garantie, planifier une autre solution"]
+  end
+  subgraph F["Couloir : Fournisseur"]
+    F1["Recevoir la demande de garantie"]
+    F2{"Action acceptée ?"}
+    F3["Réparer ou remplacer la ressource"]
+    F4["Envoyer un motif de refus"]
+  end
+  subgraph SYS["Couloir : Système"]
+    S1["Créer l'action de garantie"]
+    S2["Notifier les acteurs concernés"]
+    S3["Mettre à jour le statut de la ressource"]
+    S4["Journaliser la décision"]
+  end
+  D --> R1 --> R2 --> R3
+  R3 -->|Non| R6 --> S4 --> Fin((Fin))
+  R3 -->|Oui| R4 --> S1 --> R5 --> F1 --> F2
+  F2 -->|Oui| F3 --> S3 --> S2 --> S4
+  F2 -->|Non| F4 --> S2 --> S4
+</pre>
+<figcaption>BP-06 — Réparation ou remplacement sous garantie.</figcaption>
+</figure>
+
+<h2>BP-06 — Réparation ou remplacement sous garantie</h2>
+<p>Sur réception d'un constat sévère, le responsable vérifie la validité de la garantie de la ressource. La règle <span class="pill br">BR-10</span> est déterminante : <strong>aucune action de garantie n'est possible si la garantie a expiré</strong>. Si la garantie est valide, le responsable choisit entre réparation et remplacement, et adresse la demande au fournisseur accompagnée du constat. Le fournisseur traite la demande (réparation/remplacement ou refus motivé). Le système crée l'action de garantie, met à jour le statut de la ressource, notifie les acteurs et journalise la décision. Ce processus couvre <span class="pill fr">FR-21</span>.</p>
+
+<div class="callout">
+  <span class="ct">Enchaînement des processus</span>
+  Les six processus forment une chaîne : BP-01 produit des besoins validés qui alimentent BP-02 ; BP-02 ouvre l'appel auquel répond BP-03 ; la sélection de BP-03 déclenche BP-04 (livraison) ; une ressource affectée peut tomber en panne et entrer dans BP-05 ; un constat sévère ouvre BP-06. Cette continuité est la principale valeur ajoutée du système : une information saisie une seule fois circule de bout en bout sans rupture.
+</div>
+
+<!-- ================= 7. EXIGENCES FONCTIONNELLES ================= -->
+<h1 class="chapter">Exigences fonctionnelles</h1>
+<p>Les exigences fonctionnelles décrivent <em>ce que le système doit faire</em>. Elles sont numérotées <span class="pill fr">FR-01</span> à <span class="pill fr">FR-23</span>, priorisées (haute, moyenne) et reliées aux acteurs concernés ainsi qu'au processus métier ou au domaine de couverture. La priorité « haute » désigne une fonctionnalité indispensable à la chaîne de valeur ; la priorité « moyenne » désigne une fonctionnalité importante mais dont l'absence ne bloque pas le flux principal.</p>
+
+<h2>Tableau récapitulatif des exigences fonctionnelles</h2>
+<table class="data small">
+  <caption>Exigences fonctionnelles FR-01 à FR-23.</caption>
+  <thead><tr><th style="width:8%">ID</th><th>Exigence</th><th style="width:11%">Priorité</th><th style="width:20%">Acteurs</th><th style="width:12%">Couverture</th></tr></thead>
+  <tbody>
+    <tr><td><code>FR-01</code></td><td>Gérer l'authentification sécurisée des utilisateurs.</td><td><span class="pill hi">Haute</span></td><td>Tous</td><td>Auth, rôles</td></tr>
+    <tr><td><code>FR-02</code></td><td>Gérer les utilisateurs, les rôles et les droits d'accès.</td><td><span class="pill hi">Haute</span></td><td>Administrateur</td><td>Administration</td></tr>
+    <tr><td><code>FR-03</code></td><td>Gérer les départements et leurs membres.</td><td><span class="pill med">Moyenne</span></td><td>Admin, chef dépt.</td><td>Départements</td></tr>
+    <tr><td><code>FR-04</code></td><td>Permettre à un enseignant de soumettre un besoin matériel.</td><td><span class="pill hi">Haute</span></td><td>Enseignant</td><td>BP-01</td></tr>
+    <tr><td><code>FR-05</code></td><td>Permettre au chef de département de consolider, modifier et valider les besoins.</td><td><span class="pill hi">Haute</span></td><td>Chef dépt.</td><td>BP-01</td></tr>
+    <tr><td><code>FR-06</code></td><td>Générer et envoyer la liste prévisionnelle d'affectation au responsable.</td><td><span class="pill med">Moyenne</span></td><td>Chef dépt., resp.</td><td>BP-01</td></tr>
+    <tr><td><code>FR-07</code></td><td>Créer et publier un appel d'offre avec date de début et de fin.</td><td><span class="pill hi">Haute</span></td><td>Responsable</td><td>BP-02</td></tr>
+    <tr><td><code>FR-08</code></td><td>Permettre aux fournisseurs inscrits de consulter les appels d'offres actifs.</td><td><span class="pill hi">Haute</span></td><td>Fournisseur</td><td>BP-03</td></tr>
+    <tr><td><code>FR-09</code></td><td>Permettre aux fournisseurs de soumettre une offre détaillée.</td><td><span class="pill hi">Haute</span></td><td>Fournisseur</td><td>BP-03</td></tr>
+    <tr><td><code>FR-10</code></td><td>Évaluer les offres et éliminer les fournisseurs non conformes avec motif.</td><td><span class="pill hi">Haute</span></td><td>Responsable</td><td>BP-03</td></tr>
+    <tr><td><code>FR-11</code></td><td>Sélectionner l'offre valide la moins disante.</td><td><span class="pill hi">Haute</span></td><td>Responsable</td><td>BP-03</td></tr>
+    <tr><td><code>FR-12</code></td><td>Notifier le fournisseur accepté et les fournisseurs rejetés.</td><td><span class="pill hi">Haute</span></td><td>Resp., fournisseur</td><td>BP-03</td></tr>
+    <tr><td><code>FR-13</code></td><td>Enregistrer une livraison et compléter les informations fournisseur.</td><td><span class="pill hi">Haute</span></td><td>Responsable</td><td>BP-04</td></tr>
+    <tr><td><code>FR-14</code></td><td>Attribuer un numéro d'inventaire ou code-barres unique à chaque ressource.</td><td><span class="pill hi">Haute</span></td><td>Responsable</td><td>BP-04</td></tr>
+    <tr><td><code>FR-15</code></td><td>Lister, modifier et supprimer les ressources selon les droits.</td><td><span class="pill med">Moyenne</span></td><td>Responsable</td><td>Inventaire</td></tr>
+    <tr><td><code>FR-16</code></td><td>Affecter une ressource à un enseignant ou à un département.</td><td><span class="pill hi">Haute</span></td><td>Responsable</td><td>BP-04</td></tr>
+    <tr><td><code>FR-17</code></td><td>Modifier ou supprimer une affectation selon les droits.</td><td><span class="pill med">Moyenne</span></td><td>Responsable</td><td>Affectations</td></tr>
+    <tr><td><code>FR-18</code></td><td>Permettre à un enseignant de signaler une panne.</td><td><span class="pill hi">Haute</span></td><td>Enseignant</td><td>BP-05</td></tr>
+    <tr><td><code>FR-19</code></td><td>Gérer les interventions de maintenance.</td><td><span class="pill hi">Haute</span></td><td>Technicien</td><td>BP-05</td></tr>
+    <tr><td><code>FR-20</code></td><td>Rédiger un constat technique pour une panne sévère.</td><td><span class="pill hi">Haute</span></td><td>Technicien</td><td>BP-05</td></tr>
+    <tr><td><code>FR-21</code></td><td>Gérer les demandes de réparation ou remplacement sous garantie.</td><td><span class="pill hi">Haute</span></td><td>Resp., fournisseur</td><td>BP-06</td></tr>
+    <tr><td><code>FR-22</code></td><td>Envoyer des notifications aux acteurs concernés.</td><td><span class="pill hi">Haute</span></td><td>Tous</td><td>Notifications</td></tr>
+    <tr><td><code>FR-23</code></td><td>Assurer la traçabilité des opérations importantes.</td><td><span class="pill hi">Haute</span></td><td>Tous</td><td>Audit</td></tr>
+  </tbody>
+</table>
+
+<h2>Détail par domaine fonctionnel</h2>
+
+<h3>Authentification et contrôle d'accès (FR-01, FR-02)</h3>
+<p>Toute action protégée requiert une authentification préalable. Le système doit proposer plusieurs méthodes de connexion (identifiant/mot de passe, et fournisseurs d'identité externes) et reposer sur des sessions sécurisées. Les <strong>rôles privilégiés ne doivent jamais être auto-attribuables</strong> via une inscription publique : seul le rôle fournisseur peut être créé par auto-inscription, tous les comptes internes étant provisionnés par l'administrateur. L'administrateur gère les comptes, attribue les rôles et administre les droits.</p>
+
+<h3>Départements et besoins (FR-03 à FR-06)</h3>
+<p>Le système gère un référentiel de départements et leurs membres. Un enseignant peut soumettre un besoin listant des ordinateurs et/ou des imprimantes avec leurs caractéristiques techniques et une justification. Le chef de département peut examiner les besoins de <strong>son département uniquement</strong> : il peut demander des modifications, approuver ou rejeter, puis transmettre les besoins approuvés au responsable. Une liste prévisionnelle d'affectation peut être produite pour accompagner la transmission.</p>
+
+<h3>Appels d'offres et offres (FR-07 à FR-12)</h3>
+<p>Le responsable peut rédiger un appel d'offre, y rattacher les besoins approuvés, le publier, le clôturer, lancer son évaluation et l'attribuer. Un appel publié possède une fenêtre <code>[date de début, date de fin]</code> pendant laquelle, et seulement pendant laquelle, les fournisseurs peuvent soumettre une offre. Chaque ligne d'offre précise marque, prix unitaire, quantité, durée de garantie (en mois) et date de livraison prévisionnelle ; le total est <strong>recalculé côté serveur</strong>. Le responsable peut éliminer une offre (avec motif), la rejeter, ou accepter l'offre valide la moins disante — l'acceptation rejetant automatiquement les autres et attribuant l'appel. Les fournisseurs en liste noire ne peuvent pas soumettre et leurs offres existantes peuvent être éliminées.</p>
+
+<h3>Inventaire et affectation (FR-13 à FR-17)</h3>
+<p>Les ressources livrées reçoivent un code d'inventaire unique (préfixé selon le type, par exemple <code>CPU-…</code> ou <code>PRT-…</code>). Les spécifications propres aux ordinateurs et aux imprimantes sont stockées séparément. Une ressource ne peut posséder qu'<strong>une seule affectation active</strong> à un instant donné, mais l'<strong>historique complet</strong> des affectations est conservé (les lignes sont désactivées, jamais supprimées). Une affectation cible soit un utilisateur, soit un département.</p>
+
+<h3>Maintenance et garantie (FR-18 à FR-21)</h3>
+<p>Un enseignant ne peut signaler une panne que sur une ressource qui lui est affectée ou affectée à son département. Le technicien peut prendre en charge une panne, intervenir, la résoudre ou l'escalader en « sévère ». Une panne sévère exige un constat technique (explication, date d'apparition, fréquence, type). Les pannes d'imprimante sont nécessairement de type matériel. Le responsable ne peut demander une réparation ou un remplacement au fournisseur que si la garantie est encore active.</p>
+
+<h3>Notifications et audit (FR-22, FR-23)</h3>
+<p>Des notifications internes sont diffusées pour tous les événements majeurs du flux (besoin soumis, appel publié, offre soumise/acceptée/rejetée, fournisseur éliminé, ressource affectée, panne signalée, constat créé, réparation demandée). Toutes les actions sensibles sont consignées dans un journal d'audit conservant l'auteur, l'action, l'entité concernée ainsi que les valeurs avant/après.</p>
+
+<!-- ================= 8. EXIGENCES NON FONCTIONNELLES ================= -->
+<h1 class="chapter">Exigences non fonctionnelles</h1>
+<p>Les exigences non fonctionnelles décrivent <em>comment</em> le système doit se comporter : sa qualité de service, sa sécurité, sa robustesse et son ergonomie. Elles sont identifiées <span class="pill nfr">NFR-01</span> à <span class="pill nfr">NFR-10</span> et assorties d'un critère d'acceptation vérifiable.</p>
+
+<h2>Tableau des exigences non fonctionnelles</h2>
+<table class="data small">
+  <caption>Exigences non fonctionnelles NFR-01 à NFR-10.</caption>
+  <thead><tr><th style="width:8%">ID</th><th style="width:20%">Exigence</th><th>Description</th><th style="width:30%">Critère d'acceptation</th></tr></thead>
+  <tbody>
+    <tr><td><code>NFR-01</code></td><td>Sécurité</td><td>Les accès au logiciel doivent être sécurisés.</td><td>Authentification obligatoire, sessions protégées, mots de passe hachés.</td></tr>
+    <tr><td><code>NFR-02</code></td><td>Contrôle d'accès</td><td>Chaque acteur accède uniquement aux fonctions autorisées.</td><td>Autorisations basées sur les rôles, vérifiées côté serveur.</td></tr>
+    <tr><td><code>NFR-03</code></td><td>Traçabilité</td><td>Les opérations critiques sont journalisées.</td><td>Le journal d'audit conserve acteur, action, date et cible.</td></tr>
+    <tr><td><code>NFR-04</code></td><td>Intégrité des données</td><td>Les données métier doivent rester cohérentes.</td><td>Contraintes de dates, de statuts et de cardinalités en base.</td></tr>
+    <tr><td><code>NFR-05</code></td><td>Auditabilité</td><td>Les décisions importantes doivent être justifiables.</td><td>Motifs d'élimination, de sélection et actions de garantie consultables.</td></tr>
+    <tr><td><code>NFR-06</code></td><td>Performance</td><td>Les listes courantes doivent être consultables rapidement.</td><td>Réponse &lt; 2 secondes pour les listes usuelles en charge normale.</td></tr>
+    <tr><td><code>NFR-07</code></td><td>Disponibilité</td><td>Le système reste disponible pendant les heures de travail.</td><td>Sauvegardes et reprise après incident documentées.</td></tr>
+    <tr><td><code>NFR-08</code></td><td>Maintenabilité</td><td>Le code doit être structuré en modules simples.</td><td>Architecture modulaire et tests automatisés.</td></tr>
+    <tr><td><code>NFR-09</code></td><td>Ergonomie</td><td>Les interfaces doivent être simples pour des non techniciens.</td><td>Parcours courts, libellés clairs, validations visibles.</td></tr>
+    <tr><td><code>NFR-10</code></td><td>Confidentialité</td><td>Les offres et décisions ne sont pas visibles par des tiers non autorisés.</td><td>Les fournisseurs ne consultent pas les offres concurrentes.</td></tr>
+  </tbody>
+</table>
+
+<h2>Critères d'acceptation qualité</h2>
+<p>Au-delà du tableau, plusieurs principes qualité guident la conception et serviront de grille de recette :</p>
+<ul>
+  <li><strong>Sécurité par défaut</strong> : aucun secret en clair dans le code ; les rôles privilégiés non auto-attribuables ; vérification systématique des droits au niveau du serveur, le contrôle côté client n'étant qu'un confort d'usage.</li>
+  <li><strong>Intégrité par construction</strong> : les transitions d'état (besoin, appel d'offre, offre, panne) sont validées par des automates ; les clés étrangères et l'unicité des codes empêchent les incohérences.</li>
+  <li><strong>Traçabilité de bout en bout</strong> : chaque décision sensible laisse une trace exploitable, avec conservation des valeurs avant/après modification.</li>
+  <li><strong>Maintenabilité</strong> : découpage en modules cohérents, mutualisation des règles dans un référentiel unique, fichiers de taille raisonnable, couverture de tests sur la logique à risque.</li>
+  <li><strong>Ergonomie</strong> : un tableau de bord adapté à chaque rôle, des états de chargement et des messages d'erreur explicites, des libellés lisibles plutôt que des identifiants techniques.</li>
+</ul>
+
+<div class="callout">
+  <span class="ct">Note de priorisation</span>
+  Les exigences <span class="pill nfr">NFR-01</span>, <span class="pill nfr">NFR-02</span>, <span class="pill nfr">NFR-03</span> et <span class="pill nfr">NFR-04</span> sont considérées comme <strong>bloquantes</strong> : elles conditionnent la confiance dans le système et ne peuvent faire l'objet d'aucun compromis. Les exigences de performance et de disponibilité (<span class="pill nfr">NFR-06</span>, <span class="pill nfr">NFR-07</span>) sont calibrées pour un usage de prototype académique et pourront être renforcées en contexte de production.
+</div>
+
+<!-- ================= 9. RÈGLES DE GESTION ================= -->
+<h1 class="chapter">Règles de gestion</h1>
+<p>Les règles de gestion (<em>business rules</em>) expriment les contraintes invariantes du domaine. Elles sont indépendantes de l'interface et doivent être respectées quelle que soit la manière dont l'utilisateur interagit avec le système. Elles sont identifiées <span class="pill br">BR-01</span> à <span class="pill br">BR-12</span> et constituent le socle de l'intégrité métier.</p>
+
+<h2>Catalogue des règles de gestion</h2>
+<table class="data small">
+  <caption>Règles de gestion BR-01 à BR-12 et leur impact.</caption>
+  <thead><tr><th style="width:9%">ID</th><th>Règle</th><th style="width:32%">Impact / domaine</th></tr></thead>
+  <tbody>
+    <tr><td><code>BR-01</code></td><td>Un appel d'offre possède une date de début et une date de fin.</td><td>Publication et soumission contrôlées.</td></tr>
+    <tr><td><code>BR-02</code></td><td>Un fournisseur ne peut soumettre une offre que pendant un appel d'offre actif.</td><td>Validité des offres.</td></tr>
+    <tr><td><code>BR-03</code></td><td>Un fournisseur inscrit sur liste noire peut être éliminé.</td><td>Évaluation des fournisseurs.</td></tr>
+    <tr><td><code>BR-04</code></td><td>Toute élimination exige un motif communiqué au fournisseur.</td><td>Auditabilité et transparence.</td></tr>
+    <tr><td><code>BR-05</code></td><td>L'offre valide la moins disante est sélectionnée.</td><td>Décision d'achat.</td></tr>
+    <tr><td><code>BR-06</code></td><td>Chaque ressource livrée reçoit un numéro d'inventaire ou code-barres unique.</td><td>Inventaire.</td></tr>
+    <tr><td><code>BR-07</code></td><td>Une ressource peut être affectée à un enseignant ou à un département.</td><td>Affectations.</td></tr>
+    <tr><td><code>BR-08</code></td><td>Une panne sévère exige un constat technique.</td><td>Maintenance.</td></tr>
+    <tr><td><code>BR-09</code></td><td>Les pannes d'imprimantes sont uniquement d'ordre matériel.</td><td>Validation des constats.</td></tr>
+    <tr><td><code>BR-10</code></td><td>Une action de garantie est autorisée uniquement avant l'expiration de la garantie.</td><td>Garantie fournisseur.</td></tr>
+    <tr><td><code>BR-11</code></td><td>Une ressource supprimée ne doit pas avoir d'affectation active ni de panne ouverte.</td><td>Intégrité.</td></tr>
+    <tr><td><code>BR-12</code></td><td>Une offre rejetée ou éliminée ne peut pas être sélectionnée.</td><td>Cohérence de la sélection.</td></tr>
+  </tbody>
+</table>
+
+<h2>Cycles de vie et statuts</h2>
+<p>Plusieurs règles se matérialisent par des <strong>cycles de vie</strong> stricts. Un besoin progresse d'un brouillon à son inclusion dans un appel d'offre en passant par la soumission, la revue départementale, l'éventuelle demande de modification, l'approbation et l'envoi au responsable. Un appel d'offre suit un cycle <em>brouillon → publié → clôturé → évaluation → attribué</em> (avec une possibilité d'annulation). Une offre évolue de <em>brouillon</em> à <em>acceptée</em>, <em>rejetée</em>, <em>éliminée</em> ou <em>retirée</em>. Une panne parcourt les états <em>signalée → assignée → en cours → résolue</em>, ou bascule en <em>sévère</em> puis <em>constat créé</em>. Ces cycles, détaillés dans le rapport technique, garantissent qu'aucune transition illégale ne peut survenir (par exemple, accepter une offre éliminée, ce qu'interdit <span class="pill br">BR-12</span>).</p>
+
+<div class="callout rule">
+  <span class="ct">Règle structurante : le moins-disant valide</span>
+  La règle <span class="pill br">BR-05</span> combinée à <span class="pill br">BR-03</span> et <span class="pill br">BR-12</span> définit l'algorithme de sélection : parmi les offres <em>valides</em> (ni éliminées, ni rejetées, ni retirées, et émanant d'un fournisseur non blacklisté), le système retient celle dont le total est le plus faible. Le périmètre des présentes spécifications retient une sélection <strong>globale par offre</strong> (et non ligne par ligne), interprétation la plus directe du besoin exprimé.
+</div>
+
+<!-- ================= 10. DIAGRAMME DES EXIGENCES & TRAÇABILITÉ ================= -->
+<h1 class="chapter">Diagramme des exigences et traçabilité</h1>
+<p>Pour garantir qu'aucune exigence n'est orpheline et que chacune contribue effectivement à la satisfaction du besoin, les exigences sont organisées en un <strong>diagramme des exigences</strong> et complétées par une <strong>matrice de traçabilité</strong>. Le diagramme regroupe les trois familles (fonctionnelles, non fonctionnelles, règles de gestion) et fait apparaître les relations de support entre certaines règles ou qualités et les fonctions qu'elles encadrent.</p>
+
+<h2>Diagramme des exigences</h2>
+<figure>
+<pre class="mermaid">
+flowchart LR
+  REQ["Exigences du système"]
+  FR["Exigences fonctionnelles"]
+  NFR["Exigences non fonctionnelles"]
+  BR["Règles de gestion"]
+  REQ --> FR
+  REQ --> NFR
+  REQ --> BR
+
+  FR --> FR1["FR-01 Authentification"]
+  FR --> FR2["FR-04/05 Besoins & validation"]
+  FR --> FR3["FR-07 Appels d'offres"]
+  FR --> FR4["FR-08/09 Offres fournisseurs"]
+  FR --> FR5["FR-10/11 Évaluation & sélection"]
+  FR --> FR6["FR-13/14 Livraison & inventaire"]
+  FR --> FR7["FR-16 Affectation"]
+  FR --> FR8["FR-18/19 Signalement & intervention"]
+  FR --> FR9["FR-20/21 Constats & garanties"]
+  FR --> FR10["FR-22/23 Notifications & audit"]
+
+  NFR --> NFR1["NFR-01 Sécurité"]
+  NFR --> NFR2["NFR-02 Contrôle d'accès"]
+  NFR --> NFR3["NFR-03 Traçabilité"]
+  NFR --> NFR4["NFR-04 Intégrité"]
+  NFR --> NFR5["NFR-06 Performance"]
+  NFR --> NFR6["NFR-08 Maintenabilité"]
+  NFR --> NFR7["NFR-09 Ergonomie"]
+
+  BR --> BR1["BR-01 Dates d'appel"]
+  BR --> BR2["BR-02 Soumission si actif"]
+  BR --> BR3["BR-04 Motif d'élimination"]
+  BR --> BR4["BR-05 Moins-disant valide"]
+  BR --> BR5["BR-06 Code inventaire unique"]
+  BR --> BR6["BR-08 Constat si sévère"]
+  BR --> BR7["BR-09 Imprimante = matériel"]
+  BR --> BR8["BR-10 Garantie non expirée"]
+
+  NFR1 -.support.-> FR1
+  NFR3 -.support.-> FR10
+  BR4 -.encadre.-> FR5
+  BR5 -.encadre.-> FR6
+  BR6 -.encadre.-> FR9
+</pre>
+<figcaption>Diagramme des exigences : familles, exigences et relations de support.</figcaption>
+</figure>
+
+<h2>Matrice de traçabilité</h2>
+<p>La matrice ci-dessous relie chaque exigence fonctionnelle à son processus métier, aux acteurs concernés et aux règles de gestion ou exigences non fonctionnelles qui la contraignent. Elle permet de vérifier la couverture (toute fonction est rattachée à un processus) et l'impact d'un changement (modifier une règle, c'est savoir quelles fonctions revoir).</p>
+<table class="data small">
+  <caption>Matrice de traçabilité exigences fonctionnelles × processus × règles.</caption>
+  <thead><tr><th>FR</th><th>Processus</th><th>Acteurs</th><th>Règles / NFR liées</th></tr></thead>
+  <tbody>
+    <tr><td><code>FR-01</code></td><td>Transverse</td><td>Tous</td><td>NFR-01, NFR-02</td></tr>
+    <tr><td><code>FR-02</code></td><td>Administration</td><td>Admin</td><td>NFR-01, NFR-02, NFR-03</td></tr>
+    <tr><td><code>FR-04 / FR-05</code></td><td>BP-01</td><td>Enseignant, chef dépt.</td><td>NFR-04, NFR-09</td></tr>
+    <tr><td><code>FR-07</code></td><td>BP-02</td><td>Responsable</td><td>BR-01, NFR-04</td></tr>
+    <tr><td><code>FR-08 / FR-09</code></td><td>BP-03</td><td>Fournisseur</td><td>BR-02, NFR-10</td></tr>
+    <tr><td><code>FR-10</code></td><td>BP-03</td><td>Responsable</td><td>BR-03, BR-04, NFR-05</td></tr>
+    <tr><td><code>FR-11</code></td><td>BP-03</td><td>Responsable</td><td>BR-05, BR-12, NFR-05</td></tr>
+    <tr><td><code>FR-12 / FR-22</code></td><td>BP-03, transverse</td><td>Resp., fournisseur</td><td>NFR-03, NFR-10</td></tr>
+    <tr><td><code>FR-13 / FR-14</code></td><td>BP-04</td><td>Responsable</td><td>BR-06, NFR-04</td></tr>
+    <tr><td><code>FR-16 / FR-17</code></td><td>BP-04</td><td>Responsable</td><td>BR-07, BR-11</td></tr>
+    <tr><td><code>FR-18 / FR-19</code></td><td>BP-05</td><td>Enseignant, technicien</td><td>NFR-04</td></tr>
+    <tr><td><code>FR-20</code></td><td>BP-05</td><td>Technicien</td><td>BR-08, BR-09</td></tr>
+    <tr><td><code>FR-21</code></td><td>BP-06</td><td>Resp., fournisseur</td><td>BR-10, NFR-05</td></tr>
+    <tr><td><code>FR-23</code></td><td>Transverse</td><td>Tous</td><td>NFR-03, NFR-05</td></tr>
+  </tbody>
+</table>
+
+<div class="callout">
+  <span class="ct">Résultat de la revue de cohérence</span>
+  La revue transversale confirme que les mêmes acteurs sont employés dans les exigences, les BPMN, les cas d'utilisation et l'architecture ; que chaque processus correspond à des cas d'utilisation principaux ; et que les règles de gestion (dates d'appel, soumission active, motif d'élimination, moins-disant, code inventaire, constat sévère, garantie) sont présentes dans les diagrammes. L'ensemble forme un tout cohérent, apte à servir de base contractuelle.
+</div>
+
+<!-- ================= 11. CAS D'UTILISATION ================= -->
+<h1 class="chapter">Modélisation des cas d'utilisation</h1>
+<p>Les cas d'utilisation décrivent les interactions observables entre les acteurs et le système. Ils complètent les processus métier en se concentrant sur le « contrat » fonctionnel offert à chaque acteur. Un diagramme global présente la vue d'ensemble ; des vues par acteur en détaillent le périmètre ; enfin, quelques cas critiques sont décrits sous forme textuelle (préconditions, flux nominal, flux alternatifs).</p>
+
+<h2>Diagramme global</h2>
+<figure>
+<pre class="mermaid">
+flowchart LR
+  RR([Responsable ressources])
+  CD([Chef de département])
+  ENS([Enseignant])
+  F([Fournisseur])
+  TM([Technicien])
+  ADM([Administrateur])
+
+  subgraph SYS["Système de gestion des ressources matérielles"]
+    UA["S'authentifier"]
+    UB["Soumettre un besoin"]
+    UV["Valider les besoins"]
+    UT["Transmettre les besoins"]
+    UAO["Créer un appel d'offre"]
+    UCO["Consulter les appels actifs"]
+    UO["Soumettre une offre"]
+    UE["Éliminer un fournisseur"]
+    USEL["Sélectionner le moins-disant"]
+    ULIV["Enregistrer une livraison"]
+    UINV["Gérer l'inventaire"]
+    UAFF["Affecter une ressource"]
+    UP["Signaler une panne"]
+    UINT["Gérer une intervention"]
+    UCONS["Rédiger un constat"]
+    UG["Demander réparation/remplacement"]
+    UN["Notifier les acteurs"]
+    UAUD["Consulter le journal d'audit"]
+    UUSR["Gérer utilisateurs & rôles"]
+  end
+
+  ENS --> UA & UB & UP
+  CD --> UA & UV & UT
+  RR --> UA & UAO & UE & USEL & ULIV & UINV & UAFF & UG & UAUD
+  F --> UA & UCO & UO
+  TM --> UA & UINT & UCONS
+  ADM --> UA & UUSR & UAUD
+
+  UV -.include.-> UT
+  UAO -.include.-> UN
+  USEL -.include.-> UN
+  ULIV -.include.-> UINV
+  UAFF -.include.-> UN
+  UCONS -.extend.-> UG
+</pre>
+<figcaption>Diagramme global des cas d'utilisation et relations include / extend.</figcaption>
+</figure>
+
+<h2>Vues par acteur</h2>
+<p>Chaque acteur dispose d'un périmètre fonctionnel restreint. Les vues ci-dessous, plus fines, servent de référence pour la conception des interfaces et la définition des droits.</p>
+
+<figure>
+<pre class="mermaid">
+flowchart LR
+  ENS([Enseignant])
+  ENS --> A1["Consulter mes ressources"]
+  ENS --> A2["Soumettre un besoin"]
+  ENS --> A3["Suivre le statut d'un besoin"]
+  ENS --> A4["Signaler une panne"]
+  ENS --> A5["Suivre une panne"]
+  CD([Chef de département])
+  CD --> B1["Demander les besoins"]
+  CD --> B2["Consulter les besoins reçus"]
+  CD --> B3["Modifier après concertation"]
+  CD --> B4["Valider les besoins"]
+  CD --> B5["Transmettre au responsable"]
+  CD --> B6["Envoyer la liste prévisionnelle"]
+</pre>
+<figcaption>Cas d'utilisation — Enseignant et Chef de département.</figcaption>
+</figure>
+
+<figure>
+<pre class="mermaid">
+flowchart LR
+  RR([Responsable ressources])
+  RR --> C1["Créer / publier / clôturer / attribuer un appel"]
+  RR --> C2["Inclure les besoins dans l'appel"]
+  RR --> C3["Évaluer / éliminer / accepter / rejeter les offres"]
+  RR --> C4["Gérer les fournisseurs / liste noire"]
+  RR --> C5["Enregistrer les livraisons"]
+  RR --> C6["Affecter / retirer des ressources"]
+  RR --> C7["Décider d'une action de garantie"]
+  F([Fournisseur])
+  F --> D1["Créer un compte société"]
+  F --> D2["Consulter les appels actifs"]
+  F --> D3["Soumettre / retirer une offre"]
+  F --> D4["Mettre à jour le profil"]
+</pre>
+<figcaption>Cas d'utilisation — Responsable des ressources et Fournisseur.</figcaption>
+</figure>
+
+<figure>
+<pre class="mermaid">
+flowchart LR
+  TM([Technicien])
+  TM --> E1["Prendre en charge une panne"]
+  TM --> E2["Démarrer une intervention"]
+  TM --> E3["Résoudre la panne"]
+  TM --> E4["Qualifier en sévère"]
+  TM --> E5["Rédiger un constat technique"]
+  ADM([Administrateur])
+  ADM --> G1["Gérer les utilisateurs"]
+  ADM --> G2["Attribuer les rôles"]
+  ADM --> G3["Gérer les départements"]
+  ADM --> G4["Consulter le journal d'audit"]
+</pre>
+<figcaption>Cas d'utilisation — Technicien de maintenance et Administrateur.</figcaption>
+</figure>
+
+<h2>Descriptions détaillées</h2>
+
+<h3>UC-08 — Le fournisseur soumet une offre</h3>
+<table class="data small">
+  <tbody>
+    <tr><td class="k" style="width:30%;background:var(--soft2)"><strong>Acteur principal</strong></td><td>Fournisseur</td></tr>
+    <tr><td style="background:var(--soft2)"><strong>Préconditions</strong></td><td>Fournisseur authentifié, non inscrit sur liste noire ; appel d'offre <em>publié</em> et dans la fenêtre <code>[début, fin]</code>.</td></tr>
+    <tr><td style="background:var(--soft2)"><strong>Flux nominal</strong></td><td>1. Le fournisseur ouvre l'appel actif et choisit « Soumettre une offre ». 2. Il renseigne les lignes (type, marque, prix unitaire, quantité, garantie, date de livraison). 3. Le total saisi est indicatif ; le serveur le recalcule. 4. L'offre est créée puis soumise. 5. Les responsables sont notifiés. 6. Les actions sont journalisées.</td></tr>
+    <tr><td style="background:var(--soft2)"><strong>Flux alternatifs</strong></td><td>Appel hors fenêtre → violation de règle métier (refus). Fournisseur en liste noire → accès interdit.</td></tr>
+    <tr><td style="background:var(--soft2)"><strong>Règles</strong></td><td><span class="pill br">BR-02</span>, <span class="pill br">BR-03</span></td></tr>
+  </tbody>
+</table>
+
+<h3>UC-10 — Le responsable accepte l'offre valide la moins disante</h3>
+<table class="data small">
+  <tbody>
+    <tr><td class="k" style="width:30%;background:var(--soft2)"><strong>Acteur principal</strong></td><td>Responsable des ressources</td></tr>
+    <tr><td style="background:var(--soft2)"><strong>Préconditions</strong></td><td>Appel en cours d'évaluation, au moins une offre valide existe.</td></tr>
+    <tr><td style="background:var(--soft2)"><strong>Flux nominal</strong></td><td>1. Le responsable ouvre la page d'évaluation ; les offres sont triées par total croissant. 2. Il accepte l'offre candidate. 3. Le serveur vérifie qu'il s'agit bien de l'offre valide la moins disante (hors offres éliminées et fournisseurs blacklistés) ; si une offre valide strictement inférieure existe, l'acceptation est bloquée. 4. L'offre passe à <em>acceptée</em>, les autres offres ouvertes passent à <em>rejetée</em>, et l'appel est <em>attribué</em>. 5. Le fournisseur retenu et les rejetés sont notifiés.</td></tr>
+    <tr><td style="background:var(--soft2)"><strong>Règles</strong></td><td><span class="pill br">BR-05</span>, <span class="pill br">BR-12</span></td></tr>
+  </tbody>
+</table>
+
+<h3>UC-15 — Le technicien rédige un constat technique</h3>
+<table class="data small">
+  <tbody>
+    <tr><td class="k" style="width:30%;background:var(--soft2)"><strong>Acteur principal</strong></td><td>Technicien de maintenance</td></tr>
+    <tr><td style="background:var(--soft2)"><strong>Préconditions</strong></td><td>La panne est au statut <em>sévère</em>.</td></tr>
+    <tr><td style="background:var(--soft2)"><strong>Flux nominal</strong></td><td>1. Le technicien ouvre la panne sévère et choisit « Rédiger un constat technique ». 2. Il renseigne l'explication, la date d'apparition, la fréquence et le type. 3. Le serveur valide la règle « imprimante = matériel ». 4. La panne passe à <em>constat créé</em> ; les responsables sont notifiés.</td></tr>
+    <tr><td style="background:var(--soft2)"><strong>Règles</strong></td><td><span class="pill br">BR-08</span>, <span class="pill br">BR-09</span></td></tr>
+  </tbody>
+</table>
+
+<!-- ================= 12. SCÉNARIOS ================= -->
+<h1 class="chapter">Scénarios fonctionnels</h1>
+<p>Les scénarios décrivent des parcours utilisateurs concrets de bout en bout. Ils servent à la fois de support de validation et de base aux tests de recette. Chaque scénario précise l'acteur principal, le déroulement nominal et le résultat attendu.</p>
+
+<table class="data small">
+  <caption>Scénarios fonctionnels nominaux.</caption>
+  <thead><tr><th style="width:16%">Scénario</th><th style="width:13%">Acteur</th><th>Déroulement nominal</th><th style="width:22%">Résultat</th></tr></thead>
+  <tbody>
+    <tr><td>Soumission d'un besoin</td><td>Enseignant</td><td>Se connecte, choisit le type de ressource, renseigne les caractéristiques et soumet le besoin.</td><td>Besoin en attente de validation par le chef.</td></tr>
+    <tr><td>Validation des besoins</td><td>Chef de département</td><td>Consulte les besoins, ajuste après concertation, valide et transmet au responsable.</td><td>Besoins consolidés transmis.</td></tr>
+    <tr><td>Création d'un appel d'offre</td><td>Responsable</td><td>Regroupe les besoins, définit les dates et publie l'appel.</td><td>Appel visible aux fournisseurs pendant la période active.</td></tr>
+    <tr><td>Soumission d'une offre</td><td>Fournisseur</td><td>Consulte l'appel actif et soumet prix, marque, garantie, date de livraison et total.</td><td>Offre enregistrée.</td></tr>
+    <tr><td>Sélection du fournisseur</td><td>Responsable</td><td>Élimine les fournisseurs invalides, compare les offres valides, choisit le moins-disant.</td><td>Retenu notifié ; les autres reçoivent un rejet.</td></tr>
+    <tr><td>Signalement d'une panne</td><td>Enseignant</td><td>Sélectionne une ressource affectée, décrit la panne et l'envoie au service maintenance.</td><td>Panne ouverte créée.</td></tr>
+    <tr><td>Constat technique</td><td>Technicien</td><td>Intervient, tente la réparation et rédige un constat si la panne est sévère.</td><td>Constat transmis au responsable.</td></tr>
+    <tr><td>Action de garantie</td><td>Responsable</td><td>Vérifie la garantie et envoie au fournisseur une demande de réparation ou de remplacement.</td><td>Action de garantie créée et suivie.</td></tr>
+  </tbody>
+</table>
+
+<h3>Illustration d'un parcours complet</h3>
+<p>Pour illustrer l'enchaînement, considérons un cas réel : le département d'informatique a besoin de dix postes de travail. Une enseignante saisit le besoin (dix ordinateurs, caractéristiques précisées) ; le chef de département le valide et le transmet. Le responsable regroupe ce besoin avec d'autres dans un appel d'offre <code>TND-2026-001</code>, qu'il publie pour deux semaines. Deux fournisseurs soumettent des offres. Le responsable élimine une offre incomplète avec motif, puis accepte la moins disante des offres valides ; l'appel devient attribué et les fournisseurs sont notifiés. À la livraison, chaque poste reçoit un code d'inventaire unique (par exemple <code>CPU-20260512-A1B2C3</code>) et est affecté à un enseignant. Quelques semaines plus tard, l'un des postes tombe en panne : l'enseignant le signale, un technicien intervient, qualifie la panne de sévère et rédige un constat. Le responsable vérifie que la garantie est valide et demande une réparation au fournisseur. Tout au long de ce parcours, chaque décision sensible est notifiée aux acteurs concernés et journalisée dans l'audit.</p>
+
+<!-- ================= 13. MAQUETTES ================= -->
+<h1 class="chapter">Maquettes et wireframes</h1>
+<p>Les maquettes textuelles (wireframes) fixent les intentions d'interface avant toute réalisation graphique. Elles décrivent, pour chaque écran clé, l'acteur cible, l'objectif, les principales sections, les champs et les actions. Volontairement schématiques, elles privilégient la structure de l'information et le parcours utilisateur sur l'esthétique.</p>
+
+<h2>Page de connexion</h2>
+<p>Cible : tous les utilisateurs. Objectif : un accès sécurisé. Sections : titre/logo, formulaire, messages d'erreur. Champs : identifiant/email, mot de passe. Actions : se connecter, mot de passe oublié.</p>
+<div class="wire">+--------------------------------------------------+
+|   Gestion des ressources matérielles             |
+|                                                  |
+|   [ Identifiant / Email ......................]  |
+|   [ Mot de passe ............................]  |
+|                                                  |
+|   ( Se connecter )            Mot de passe oublié|
++--------------------------------------------------+</div>
+
+<h2>Tableau de bord du responsable des ressources</h2>
+<p>Objectif : piloter appels d'offres, livraisons, inventaire, maintenance et garanties. Sections : indicateurs, appels actifs, offres à évaluer, pannes sévères, actions rapides.</p>
+<div class="wire">+ Menu ------+------------------- Tableau du responsable -------------------+
+| Appels     |  [Appels actifs] [Offres à évaluer] [Pannes sévères] [Garanties]
+| Inventaire |  ----------------------------------------------------------------
+| Affectation|  Pipeline des appels d'offres   |  Résultats des offres
+| Maintenance|  (graphique en barres)          |  (graphique en barres)
+| Audit      |  ----------------------------------------------------------------
+|            |  Liste des alertes et actions prioritaires
++------------+----------------------------------------------------------------+</div>
+
+<h2>Gestion des appels d'offre</h2>
+<p>Cible : responsable. Champs : titre, dates, lignes de matériel, départements, statut. Actions : brouillon, publier, clôturer, évaluer.</p>
+<div class="wire">+ Appel d'offre -----------------------------------------------------+
+|  Titre [________________]   Début [____]   Fin [____]   Statut: DRAFT|
+|  ------------------------------------------------------------------ |
+|  Lignes :  Type        | Caractéristiques        | Quantité         |
+|            Ordinateur  | i7 / 16 Go / SSD 512    |   10             |
+|            Imprimante  | 30 ppm / 1200 dpi       |    2             |
+|  ( + Ajouter une ligne )        ( Enregistrer )      ( Publier )     |
++--------------------------------------------------------------------+</div>
+
+<h2>Soumission d'une offre fournisseur</h2>
+<p>Cible : fournisseur. Champs : appel d'offre, lignes (marque, prix unitaire, quantité), garantie, date de livraison, total. Actions : enregistrer brouillon, soumettre.</p>
+<div class="wire">+ Soumettre une offre — Appel TND-2026-001 ---------------------------+
+|  Ligne | Marque   | Prix unitaire | Qté | Garantie | Livraison      |
+|   1    | Dell     |   720,00      | 10  | 24 mois  | 2026-06-30     |
+|   2    | Brother  |   210,00      |  2  | 12 mois  | 2026-06-30     |
+|  ------------------------------------------------------------------ |
+|  Total (recalculé serveur) : 7 620,00      ( Brouillon ) ( Soumettre )|
++--------------------------------------------------------------------+</div>
+
+<h2>Inventaire des ressources</h2>
+<p>Cible : responsable. Sections : filtres, tableau des ressources, détail. Champs : code inventaire, type, marque, statut, affectation, garantie. Actions : ajouter, modifier, supprimer si autorisé, exporter.</p>
+<div class="wire">+ Inventaire ---------------------------------------------------------+
+|  Filtres : [Type v] [Statut v] [Département v]      ( Exporter )     |
+|  ------------------------------------------------------------------ |
+|  Code            | Type   | Marque | Statut    | Affecté à | Garantie|
+|  CPU-20260512-A1 | Ordi.  | Dell   | AFFECTÉE  | M. Durand | 2028-06 |
+|  PRT-20260512-B7 | Impr.  | Brother| DISPONIBLE| —         | 2027-06 |
++--------------------------------------------------------------------+</div>
+
+<h2>Signalement de panne et constat technique</h2>
+<p>Le signalement (enseignant) capte la ressource, la date d'apparition, la description et l'urgence. Le constat (technicien) ajoute le diagnostic, la fréquence, le type matériel/logiciel et la sévérité.</p>
+<div class="wire">+ Signaler une panne ----------------+   + Constat technique --------------+
+|  Ressource [CPU-20260512-A1 v]      |   |  Panne      #PAN-0042            |
+|  Date apparition [____]             |   |  Diagnostic [................]   |
+|  Description [................]     |   |  Fréquence  [Fréquente v]       |
+|  Urgence [Normale v]                |   |  Type       [Matériel v]        |
+|  ( Annuler )     ( Envoyer )        |   |  Sévérité   [Sévère v]          |
++-------------------------------------+   |  ( Transmettre au responsable ) |
+                                          +---------------------------------+</div>
+
+<div class="callout">
+  <span class="ct">Du wireframe à l'interface réalisée</span>
+  Ces maquettes ont guidé une réalisation moderne reposant sur un tableau de bord par rôle, des tableaux de données avec états de chargement et messages vides, des badges de statut colorés et une barre latérale filtrée selon le rôle de l'utilisateur connecté. Le détail de l'interface réalisée figure dans le rapport technique.
+</div>
+
+<!-- ================= 14. CONTRAINTES & HYPOTHÈSES ================= -->
+<h1 class="chapter">Contraintes, hypothèses et points à clarifier</h1>
+
+<h2>Hypothèses retenues</h2>
+<p>Les spécifications reposent sur un ensemble d'hypothèses, explicitées ici pour lever toute ambiguïté :</p>
+<ul>
+  <li>Le système est une <strong>application web</strong> accessible aux acteurs internes et aux fournisseurs.</li>
+  <li>Chaque enseignant appartient à un <strong>seul département</strong> dans le cadre du projet.</li>
+  <li>Le responsable peut consolider les besoins de <strong>plusieurs départements</strong> dans un même appel d'offre.</li>
+  <li>Le choix du moins-disant s'applique <strong>après</strong> élimination des offres et fournisseurs invalides.</li>
+  <li>Les informations complètes d'un fournisseur peuvent être saisies au moment de la livraison si elles ne l'ont pas été à l'inscription.</li>
+  <li>La liste noire des fournisseurs est gérée par le responsable des ressources.</li>
+  <li>Les notifications sont <strong>internes</strong> ; un canal courriel pourra être ajouté ultérieurement.</li>
+</ul>
+
+<h2>Contraintes</h2>
+<ul>
+  <li><strong>Sécurité</strong> : aucune fonctionnalité accessible sans authentification ; cloisonnement strict par rôle ; aucun secret stocké dans le code.</li>
+  <li><strong>Intégrité</strong> : les contraintes de dates, de statuts et de cardinalités sont garanties au niveau de la base de données.</li>
+  <li><strong>Traçabilité</strong> : conservation des décisions importantes et préférence pour la suppression logique des données critiques.</li>
+  <li><strong>Périmètre matériel</strong> : seuls les ordinateurs et les imprimantes sont gérés dans la version courante.</li>
+</ul>
+
+<h2>Ambiguïtés identifiées</h2>
+<ul>
+  <li>Le budget par département est mentionné mais ses règles de contrôle ne sont pas détaillées.</li>
+  <li>La procédure de concertation n'est pas formalisée : elle est modélisée comme une étape de révision des besoins.</li>
+  <li>La granularité de l'appel d'offre (un seul type de matériel ou plusieurs lignes) : le modèle retient plusieurs lignes.</li>
+  <li>Le niveau de validation administrative externe à la faculté n'est pas précisé.</li>
+  <li>La suppression physique des ressources pose un problème d'audit : le modèle recommande une désactivation logique.</li>
+</ul>
+
+<h2>Questions à poser au client</h2>
+<ol>
+  <li>Faut-il gérer un budget numérique par département et bloquer les besoins qui le dépassent ?</li>
+  <li>Les fournisseurs doivent-ils fournir des documents administratifs lors de l'inscription ?</li>
+  <li>Une offre peut-elle proposer une marque différente si les caractéristiques sont équivalentes ?</li>
+  <li>Le moins-disant est-il calculé sur le total global ou par ligne de matériel ?</li>
+  <li>Qui valide définitivement la réception conforme de la livraison ?</li>
+  <li>Une ressource peut-elle changer plusieurs fois d'affectation avec historique complet ?</li>
+  <li>Quels canaux de notification sont attendus : application, courriel, SMS ?</li>
+  <li>Quelle durée de conservation est exigée pour le journal d'audit ?</li>
+</ol>
+
+<!-- ================= 15. CRITÈRES D'ACCEPTATION & LIVRABLES ================= -->
+<h1 class="chapter">Critères d'acceptation et livrables</h1>
+
+<h2>Critères d'acceptation</h2>
+<p>Le système sera réputé conforme si, au terme de la recette, les critères suivants sont satisfaits :</p>
+<table class="data small">
+  <caption>Critères d'acceptation et exigences associées.</caption>
+  <thead><tr><th style="width:30%">Critère</th><th>Vérification</th><th style="width:18%">Exigences</th></tr></thead>
+  <tbody>
+    <tr><td>Chaîne complète réalisable</td><td>Les six processus métier s'enchaînent de bout en bout sans rupture.</td><td>FR-04 → FR-21</td></tr>
+    <tr><td>Authentification &amp; rôles</td><td>Accès refusé sans session ; chaque rôle limité à ses fonctions ; rôles privilégiés non auto-attribuables.</td><td>FR-01, NFR-01, NFR-02</td></tr>
+    <tr><td>Fenêtre de soumission</td><td>Une offre hors période active est refusée.</td><td>BR-01, BR-02</td></tr>
+    <tr><td>Moins-disant valide</td><td>L'acceptation d'une offre non minimale (parmi les valides) est bloquée.</td><td>BR-05, BR-12</td></tr>
+    <tr><td>Motif d'élimination</td><td>Une élimination sans motif est refusée.</td><td>BR-04</td></tr>
+    <tr><td>Code d'inventaire unique</td><td>Deux ressources ne peuvent partager un même code.</td><td>BR-06</td></tr>
+    <tr><td>Constat &amp; garantie</td><td>Constat obligatoire pour panne sévère ; action de garantie refusée si garantie expirée.</td><td>BR-08, BR-10</td></tr>
+    <tr><td>Traçabilité</td><td>Les décisions sensibles apparaissent dans le journal d'audit.</td><td>FR-23, NFR-03</td></tr>
+    <tr><td>Confidentialité</td><td>Un fournisseur ne voit jamais les offres concurrentes.</td><td>NFR-10</td></tr>
+  </tbody>
+</table>
+
+<h2>Livrables attendus</h2>
+<ul>
+  <li>Le présent <strong>cahier des charges et dossier de spécifications</strong> (ce document).</li>
+  <li>Le <strong>rapport technique</strong> (architecture, conception et réalisation).</li>
+  <li>L'<strong>application</strong> fonctionnelle (backend, frontend, base de données) déployable via conteneurs.</li>
+  <li>Les <strong>diagrammes</strong> source (BPMN, UML, architecture) et le jeu de <strong>données de démonstration</strong>.</li>
+  <li>La <strong>documentation</strong> d'exploitation (mise en route, comptes de démonstration, déploiement).</li>
+</ul>
+
+<!-- ================= 16. PLANIFICATION ================= -->
+<h1 class="chapter">Planification du projet</h1>
+<p>La conduite du projet s'appuie sur un découpage structuré du travail (WBS), un planning prévisionnel (Gantt) et un plan de versions incrémentales. Cette organisation a permis de livrer le système par lots cohérents et testés.</p>
+
+<h2>Découpage du travail (WBS)</h2>
+<figure>
+<pre class="mermaid">
+flowchart LR
+  ROOT["Projet — Gestion des ressources matérielles"]
+  ROOT --> A["1. Analyse"]
+  A --> A1["Cahier des charges"]
+  A --> A2["Acteurs"]
+  A --> A3["Exigences"]
+  A --> A4["Règles de gestion"]
+  ROOT --> B["2. Modélisation métier"]
+  B --> B1["BPMN besoins / appel / offres"]
+  B --> B2["BPMN inventaire / maintenance"]
+  ROOT --> C["3. Modélisation UML"]
+  C --> C1["Cas d'utilisation"]
+  C --> C2["Packages"]
+  C --> C3["Classes"]
+  C --> C4["Séquences"]
+  ROOT --> D["4. Architecture"]
+  D --> D1["3 tiers / composants"]
+  D --> D2["Déploiement / choix techniques"]
+  ROOT --> E["5. Implémentation"]
+  E --> E1["Release 1 — acquisition"]
+  E --> E2["Release 2 — inventaire & maintenance"]
+  ROOT --> F["6. Tests"]
+  F --> F1["Unitaires / intégration / validation"]
+  ROOT --> G["7. Intégration & déploiement"]
+  G --> G1["Docker / PostgreSQL / sécurité"]
+  ROOT --> H["8. Rapport & soutenance"]
+  H --> H1["Rapports / présentation / démo"]
+</pre>
+<figcaption>Structure de découpage du projet (Work Breakdown Structure).</figcaption>
+</figure>
+
+<h2>Planning prévisionnel (Gantt)</h2>
+<figure>
+<pre class="mermaid">
+gantt
+  dateFormat YYYY-MM-DD
+  axisFormat %d/%m
+  tickInterval 1week
+  weekday monday
+  title Planning prévisionnel du projet
+  section Analyse
+  Analyse des besoins        :a1, 2026-04-24, 5d
+  section Modélisation
+  Modélisation métier (BPMN) :b1, 2026-04-27, 4d
+  Modélisation UML           :b2, 2026-04-29, 6d
+  Architecture               :b3, 2026-05-02, 4d
+  section Release 1
+  Implémentation R1          :c1, 2026-05-04, 8d
+  Tests R1                   :c2, 2026-05-10, 4d
+  section Release 2
+  Implémentation R2          :d1, 2026-05-12, 8d
+  Tests R2 & intégration     :d2, 2026-05-18, 5d
+  section Finalisation
+  Déploiement                :e1, 2026-05-22, 3d
+  Rapports & soutenance      :e2, 2026-05-24, 7d
+</pre>
+<figcaption>Planning prévisionnel par phases. Les dates sont indicatives et ajustables.</figcaption>
+</figure>
+
+<h2>Plan de versions</h2>
+<p>Le projet a été réalisé en sept versions incrémentales, chacune apportant un sous-ensemble cohérent et testé. Cette stratégie a permis de sécuriser tôt les fondations (authentification, contrôle d'accès) avant d'aborder les fonctionnalités métier les plus complexes.</p>
+<table class="data small">
+  <caption>Plan de versions du projet (R0 à R6).</caption>
+  <thead><tr><th style="width:14%">Version</th><th>Périmètre</th><th style="width:12%">Statut</th></tr></thead>
+  <tbody>
+    <tr><td><strong>R0</strong> — Fondation</td><td>Espace de travail, package partagé, configurations, conteneurs, intégration continue.</td><td>Réalisé</td></tr>
+    <tr><td><strong>R1</strong> — Auth &amp; RBAC</td><td>Authentification, matrice de permissions, utilisateurs, départements, interface adaptée au rôle.</td><td>Réalisé</td></tr>
+    <tr><td><strong>R2</strong> — Besoins &amp; appels</td><td>Besoins enseignants, validation départementale, appels d'offres, publication, inclusion des besoins.</td><td>Réalisé</td></tr>
+    <tr><td><strong>R3</strong> — Fournisseurs &amp; offres</td><td>Inscription fournisseur, soumission, élimination, moins-disant, liste noire, acceptation/rejet, notifications.</td><td>Réalisé</td></tr>
+    <tr><td><strong>R4</strong> — Inventaire &amp; affectations</td><td>Enregistrement avec codes d'inventaire, spécifications, affectation/désaffectation avec historique.</td><td>Réalisé</td></tr>
+    <tr><td><strong>R5</strong> — Maintenance &amp; garantie</td><td>Pannes (contrôle d'affectation), interventions, constats, réparation/remplacement sous garantie.</td><td>Réalisé</td></tr>
+    <tr><td><strong>R6</strong> — Qualité &amp; déploiement</td><td>Tests, intégration continue, conteneurisation, documentation académique.</td><td>Réalisé</td></tr>
+  </tbody>
+</table>
+
+<!-- ================= 17. GLOSSAIRE ================= -->
+<h1 class="chapter">Glossaire et langage métier</h1>
+<p>Le vocabulaire ci-dessous constitue le <em>langage métier partagé</em> du projet. Il est employé de manière cohérente dans l'ensemble des artefacts (exigences, diagrammes, code) afin d'éviter les ambiguïtés et les synonymes flottants.</p>
+<table class="data small">
+  <caption>Glossaire du domaine.</caption>
+  <thead><tr><th style="width:24%">Terme</th><th>Définition</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Besoin</strong></td><td>Demande d'équipement exprimée par un enseignant, composée d'une ou plusieurs lignes de besoin.</td></tr>
+    <tr><td><strong>Ligne de besoin</strong></td><td>Élément d'un besoin précisant le type de matériel, la quantité et les caractéristiques.</td></tr>
+    <tr><td><strong>Appel d'offre</strong></td><td>Consultation publiée par le responsable, encadrée par une date de début et de fin, regroupant des lignes de matériel.</td></tr>
+    <tr><td><strong>Offre</strong></td><td>Proposition d'un fournisseur en réponse à un appel d'offre, composée de lignes (marque, prix, quantité, garantie, livraison).</td></tr>
+    <tr><td><strong>Moins-disant valide</strong></td><td>Offre au total le plus bas parmi les offres valides (ni éliminées, ni rejetées, fournisseur non blacklisté).</td></tr>
+    <tr><td><strong>Liste noire</strong></td><td>Ensemble des fournisseurs interdits de soumission, avec motif et date.</td></tr>
+    <tr><td><strong>Ressource</strong></td><td>Équipement matériel (ordinateur ou imprimante) doté d'un code d'inventaire unique et d'un statut.</td></tr>
+    <tr><td><strong>Code d'inventaire</strong></td><td>Identifiant unique attribué à une ressource lors de sa livraison.</td></tr>
+    <tr><td><strong>Affectation</strong></td><td>Attribution d'une ressource à un utilisateur ou à un département, avec historique conservé.</td></tr>
+    <tr><td><strong>Panne</strong></td><td>Dysfonctionnement signalé sur une ressource, suivant un cycle de vie (signalée → résolue ou sévère).</td></tr>
+    <tr><td><strong>Constat technique</strong></td><td>Document rédigé par le technicien pour une panne sévère, ouvrant le circuit de garantie.</td></tr>
+    <tr><td><strong>Action de garantie</strong></td><td>Demande de réparation ou de remplacement adressée au fournisseur lorsque la garantie est valide.</td></tr>
+    <tr><td><strong>Rôle (RBAC)</strong></td><td>Profil applicatif déterminant les permissions d'un utilisateur (contrôle d'accès basé sur les rôles).</td></tr>
+    <tr><td><strong>Journal d'audit</strong></td><td>Registre des opérations sensibles conservant acteur, action, entité et valeurs avant/après.</td></tr>
+    <tr><td><strong>Notification</strong></td><td>Message interne informant un acteur d'un événement le concernant.</td></tr>
+  </tbody>
+</table>
+
+<!-- ================= 18. CONCLUSION ================= -->
+<h1 class="chapter">Conclusion</h1>
+<p>Ce cahier des charges formalise, de manière exhaustive et traçable, le besoin auquel répond le système de gestion des ressources matérielles d'une faculté. Il identifie six acteurs aux responsabilités clairement délimitées, six processus métier formant une chaîne continue, vingt-trois exigences fonctionnelles, dix exigences non fonctionnelles et douze règles de gestion qui garantissent l'intégrité et la confiance dans le système.</p>
+
+<p>L'ensemble a été modélisé et vérifié pour sa cohérence : chaque exigence est rattachée à un processus et à des acteurs ; chaque règle de gestion se matérialise dans les diagrammes et dans les critères d'acceptation. Les ambiguïtés résiduelles ont été explicitées et accompagnées de questions précises à poser au client, afin que les choix par défaut puissent être confirmés ou révisés.</p>
+
+<p>Au-delà de sa fonction de spécification, ce document constitue un <strong>référentiel de recette</strong> : les critères d'acceptation qu'il énonce permettent de statuer objectivement sur la conformité de la solution livrée. Le projet ayant été mené à son terme, ces critères ont effectivement servi à valider la réalisation, dont l'architecture et la mise en œuvre sont détaillées dans le <em>rapport technique</em> qui complète le présent document. La continuité entre l'analyse exposée ici et la réalisation décrite par ailleurs illustre l'objectif pédagogique du projet : démontrer une maîtrise de bout en bout, de l'expression du besoin jusqu'au logiciel fonctionnel et déployé.</p>
+
+<!-- INSERT_POINT -->
+
+<script src="assets/mermaid.min.js"></script>
+<script>
+  try {
+    mermaid.initialize({
+      startOnLoad:false, theme:'base',
+      themeVariables:{
+        primaryColor:'#e8eef6', primaryBorderColor:'#16284f', primaryTextColor:'#16284f',
+        secondaryColor:'#e6f4f1', tertiaryColor:'#fdf6ec',
+        lineColor:'#0f766e', fontFamily:'Georgia, serif', fontSize:'15px',
+        clusterBkg:'#f1f5fb', clusterBorder:'#9fb0c9'
+      },
+      flowchart:{ useMaxWidth:true, htmlLabels:true, curve:'basis', nodeSpacing:34, rankSpacing:40 },
+      sequence:{ useMaxWidth:true, wrap:true },
+      gantt:{ useMaxWidth:true, barHeight:16, fontSize:11, sectionFontSize:11 },
+      state:{ useMaxWidth:true }
+    });
+    mermaid.run({ querySelector:'.mermaid' })
+      .then(()=>{ window.__MERMAID_DONE = true; })
+      .catch((e)=>{ window.__MERMAID_ERROR = String((e && e.stack) || e); });
+  } catch(e){ window.__MERMAID_ERROR = String((e && e.stack) || e); }
+</script>
+</body>
+</html>
