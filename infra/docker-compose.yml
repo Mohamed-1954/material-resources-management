@@ -31,7 +31,10 @@ services:
       postgres:
         condition: service_healthy
     env_file:
-      - ../.env
+      # Optional: loaded for local runs when present, ignored in CI / fresh clones
+      # (.env is git-ignored). Required at runtime to actually start the API.
+      - path: ../.env
+        required: false
     environment:
       NODE_ENV: production
       # Override host-mapped URL: inside the network, talk directly to postgres:5432.
