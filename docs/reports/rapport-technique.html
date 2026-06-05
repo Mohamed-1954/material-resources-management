@@ -67,8 +67,8 @@
   figure{ break-inside:avoid; margin:6mm 0 7mm; text-align:center; }
   figcaption{ counter-increment:figure; font-size:9.4pt; color:var(--muted); font-style:italic; margin-top:2.5mm; }
   figcaption::before{ content:"Figure " counter(chapter) "." counter(figure) " — "; font-weight:700; color:var(--navy); font-style:normal; }
-  .mermaid{ display:flex; justify-content:center; }
-  .mermaid svg{ max-width:100%; height:auto; }
+  .mermaid{ display:block; text-align:center; }
+  .mermaid svg{ max-width:100%; max-height:224mm; height:auto; display:block; margin:0 auto; }
 
   table.data{ width:100%; border-collapse:collapse; font-size:9.9pt; margin:3mm 0 5mm; }
   table.data caption{ caption-side:top; counter-increment:tableidx; text-align:left; font-size:9.4pt;
@@ -1332,9 +1332,21 @@ docker compose -f infra/docker-compose.yml ps</div>
       state:{ useMaxWidth:true },
       class:{ useMaxWidth:true }
     });
+    function __normalizeSvgs(){
+      var MAXH = '224mm';
+      document.querySelectorAll('.mermaid svg').forEach(function(svg){
+        var vb = svg.viewBox && svg.viewBox.baseVal, w, h;
+        if (vb && vb.width && vb.height){ w = vb.width; h = vb.height; }
+        else { var r = svg.getBoundingClientRect(); w = r.width; h = r.height; }
+        if (w && h){ svg.setAttribute('width', Math.round(w)); svg.setAttribute('height', Math.round(h)); }
+        var fill = svg.parentNode && svg.parentNode.classList && svg.parentNode.classList.contains('fill');
+        svg.style.cssText = 'display:block;margin:0 auto;height:auto;max-height:' + MAXH + ';'
+          + (fill ? 'width:100%;' : 'width:auto;max-width:100%;');
+      });
+    }
     mermaid.run({ querySelector:'.mermaid' })
-      .then(()=>{ window.__MERMAID_DONE = true; })
-      .catch((e)=>{ window.__MERMAID_ERROR = String((e && e.stack) || e); });
+      .then(function(){ __normalizeSvgs(); window.__MERMAID_DONE = true; })
+      .catch(function(e){ window.__MERMAID_ERROR = String((e && e.stack) || e); });
   } catch(e){ window.__MERMAID_ERROR = String((e && e.stack) || e); }
 </script>
 </body>
